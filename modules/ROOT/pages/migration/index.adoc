@@ -20,9 +20,9 @@ npm update @neo4j/graphql
 
 Here is a list of all the breaking changes from version 6.0.0 to 7.0.0.
 
-=== `@unique`
+=== Removed the `@unique` directive
 
-`@unique` directive is no longer supported:
+The `@unique` directive is no longer supported:
 
 
 [source, graphql, indent=0]
@@ -33,41 +33,47 @@ type Movie {
 ----
 
 
-=== Non-list relationships
+=== Deprecated single element relationships
 
-Deprecate single element relationships:
+Single element relationships have been deprecated in favor of list relationships:
 
-
+[source, graphql, indent=0]
+----
+[cols="1,1"]
+|===
+|Before | Now
+a|
 [source, graphql, indent=0]
 ----
 type Movie {
     director: Person @relationship(type: "DIRECTED", direction: "IN")
 }
 ----
-
-In favor of list relationships:
-
-
+a|
 [source, graphql, indent=0]
 ----
 type Movie {
     director: [Person!]! @relationship(type: "DIRECTED", direction: "IN")
 }
 ----
+|===
 
-1-1 relationships cannot be reliably enforced, leading to a data inconsistent with the schema. For this reason, these have been removed in favor of the more accurate list relationships.
+
+
+Single element relationships cannot be reliably enforced, leading to a data inconsistent with the schema.
 
 
 === `overwrite`
 
 
-Argument `overwrite` in `connect` operations has been deprecated. This is part of the overarching changes to how `connect` operation work in 7.x
+The `overwrite` argument in `connect` operations has been deprecated.
+This is part of the overarching changes to how `connect` operations work in 7.x.
 
-For updating a relationship, use the `update` operation
+Instead, use the `update` operation to update a relationship.
 
 
-=== `connectOrCreate`
+=== Removed the `connectOrCreate` operation
 
-The `connectOrCreate` operation has been removed due to limitations on its featureset when compared to other operations.
+The `connectOrCreate` operation has been removed due to limitations on its feature set when compared to other operations.
 
-`connectOrCreate` relies on `MERGE` operations in Cypher, which did not allowed for `onCreate` operations to follow nested relationships.
+`connectOrCreate` relies on `MERGE` operations in Cypher, which did not allow for `onCreate` operations to follow nested relationships.
