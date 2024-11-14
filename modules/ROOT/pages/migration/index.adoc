@@ -32,16 +32,14 @@ type Movie {
 }
 ----
 
-
 === Deprecated single element relationships
 
 Single element relationships have been deprecated in favor of list relationships:
 
-[source, graphql, indent=0]
-----
 [cols="1,1"]
 |===
-|Before | Now
+| Before | After
+
 a|
 [source, graphql, indent=0]
 ----
@@ -57,8 +55,6 @@ type Movie {
 }
 ----
 |===
-
-
 
 Single element relationships cannot be reliably enforced, leading to a data inconsistent with the schema.
 
