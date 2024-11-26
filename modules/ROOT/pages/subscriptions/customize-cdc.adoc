@@ -20,8 +20,8 @@ Note that poll time is the period between a finished request and the start of th
 The actual time it takes for CDC events to trigger the subscription also depends on your network.
 * `queryConfig`: An object with the driver query options to be passed to CDC requests. 
 Use the `db` field to define the target database for CDC.
-* `onlyGraphQLEvents`: By default, subscriptions capture all changes done to the database. If this flag is set to true, only changes made through GraphQL will trigger the subscription.
-    * Note: If this flag is set to true, changes made with a different version of the `@neo4j/graphql` will **not** trigger subscriptions.
+* `onlyGraphQLEvents`: By default, subscriptions capture all changes done to the database. If this flag is set to `true`, only changes made through GraphQL will trigger the subscription.
+Note that if this flag is set to `true`, changes made with a different version of the `@neo4j/graphql` will not trigger subscriptions.
 
 For example:
 
