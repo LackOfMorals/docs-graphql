@@ -557,6 +557,6 @@ Following the deprecation of the `directed` argument, the values accepted by the
 
 A warning is raised if you use a deprecated value.
 
-=== Deprecated `typename_IN` filter in favour of `typename`
+=== Deprecated `typename_IN` filter in favor of `typename`
 
 `typename_IN` filter has been deprecated in favor of `typename`.
