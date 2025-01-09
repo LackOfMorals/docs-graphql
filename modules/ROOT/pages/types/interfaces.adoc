@@ -65,14 +65,14 @@ query GetProductionsStartingWithThe {
 }
 ----
 
-The following query will only return the movies with title starting with "The " for each actor by filtering them by `typename_IN`:
+The following query will only return the movies with title starting with "The " for each actor by filtering them by `typename`:
 
 [source, graphql, indent=0]
 ----
 query GetMoviesStartingWithThe {
     actors {
         name
-        actedIn(where: { node: { title_STARTS_WITH: "The ", typename_IN: [Movie]  } }) {
+        actedIn(where: { node: { title_STARTS_WITH: "The ", typename: [Movie]  } }) {
             title
             ... on Movie {
                 runtime
