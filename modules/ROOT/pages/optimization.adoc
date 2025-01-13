@@ -29,6 +29,7 @@ const neoSchema = new Neo4jGraphQL({
             directedArgument: true,
             connectOrCreate: true,
             typename_IN: true,
+            idAggregations: true,
         },
     },
 });
