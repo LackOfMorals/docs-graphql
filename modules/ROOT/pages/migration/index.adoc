@@ -312,6 +312,9 @@ The following fields have been added:
   - `implicitEqualFilters`
   - `deprecatedOptionsArgument`
   - `directedArgument`
+  - `directedArgument`
+  - `connectOrCreate`
+  - `typename_IN`
 
 === Removed some `@cypher` fields from the sort argument
 
@@ -553,3 +556,7 @@ Following the deprecation of the `directed` argument, the values accepted by the
 - `UNDIRECTED_ONLY` is renamed to `UNDIRECTED`.
 
 A warning is raised if you use a deprecated value.
+
+=== Deprecated `typename_IN` filter in favor of `typename`
+
+`typename_IN` filter has been deprecated in favor of `typename`.

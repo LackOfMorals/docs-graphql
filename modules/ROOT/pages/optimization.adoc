@@ -23,9 +23,12 @@ const neoSchema = new Neo4jGraphQL({
     driver,
     features: {
         excludeDeprecatedFields: {
-            implicitEqualFilters: true;
-            deprecatedOptionsArgument: true;
-            directedArgument: true;
+            implicitEqualFilters: true,
+            implicitSet: true,
+            deprecatedOptionsArgument: true,
+            directedArgument: true,
+            connectOrCreate: true,
+            typename_IN: true,
         },
     },
 });
