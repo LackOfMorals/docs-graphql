@@ -560,3 +560,7 @@ A warning is raised if you use a deprecated value.
 === Deprecated `typename_IN` filter in favor of `typename`
 
 `typename_IN` filter has been deprecated in favor of `typename`.
+
+=== Deprecated aggregations on ID fields
+
+Aggregations on ID fields are now deprecated and will be removed in the future.

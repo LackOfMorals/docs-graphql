@@ -49,7 +49,7 @@ Based on the type definitions, here is a list of fields that accept aggregations
 |===
 | Type | Aggregating function | Example
 
-| String (e.g. `ID`, `String`)
+| String (e.g. `String`)
 | `shortest`, `longest`
 a| 
 .Longest User name
