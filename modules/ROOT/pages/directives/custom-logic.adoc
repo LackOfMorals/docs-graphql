@@ -310,7 +310,7 @@ Available on nodes, this directive injects values into a query such as the `limi
 directive @limit(
     default: Int
     max: Int
-) on OBJECT
+) on OBJECT | INTERFACE
 ----
 
 === Usage
@@ -327,11 +327,8 @@ If no `default` value is set, `max` is used for queries without limit.
 
 [source, graphql, indent=0]
 ----
-{
-  Movie @limit(amount: 5) {
-    title
-    year
-  }
+type Movie @limit(max: 100, default: 10) @node {
+    id: ID
 }
 ----
 
