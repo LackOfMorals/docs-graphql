@@ -65,6 +65,8 @@ You can add relationship properties to the example in two steps:
 . Add a type definition decorated with the `@relationshipProperties` directive, containing the desired relationship properties.
 . Add a `properties` argument to both "sides" (or just one side, if you prefer) of the `@relationship` directive which points to the newly defined interface.
 
+Relationship properties fields can only be primitive types or their list variants. You cannot map complex types such as object types into the types modelling relationship properties. 
+
 For example, suppose you want to distinguish which roles an actor played in a movie:
 
 [source, graphql, indent=0]
