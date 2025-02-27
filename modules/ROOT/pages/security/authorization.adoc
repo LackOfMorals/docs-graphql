@@ -174,7 +174,9 @@ type Post @authorization(validate: [
 
 == Authorization on fields 
 
-The `@authorization` directive can be used either on either object types or their fields, with the former being used in examples for the most part on this page. When applied to a field, the authorization rules are only evaluated if the matching operations are performed on that field. For example, consider a `User` type with a `password` field:
+The `@authorization` directive can be used either on object types or their fields, with the former being used in examples for the most part on this page.
+When applied to a field, the authorization rules are only evaluated if the matching operations are performed on that field.
+For example, consider a `User` type with a `password` field:
 
 [source, graphql, indent=0]
 ----
@@ -208,7 +210,8 @@ However, consider the following query:
 }
 ----
 
-This will require a valid JWT to have been provided with the request, and the matching users will be filtered down according to the JWT subject. The same will apply for attempting to update the `password` field, the update will only apply to the user matching the JWT.
+This will require a valid JWT to have been provided with the request, and the matching users will be filtered down according to the JWT subject.
+The same applies for attempting to update the `password` field, the update will only apply to the user matching the JWT.
 
 
 == Authorization without authentication
@@ -237,9 +240,10 @@ type Post @authorization(filter: [
 
 == Ordering of rules
 
-In each ruleset (`filter` and `validate`), rules are joined with an `OR`. The two rulesets are joined with an `AND`.
+In each ruleset (`filter` and `validate`), rules are joined with an `OR`.
+The two rulesets are joined with an `AND`.
 
-An example pseudo-logic would be `(filterRule1 OR filterRule2) AND (validateRule1 OR validateRule2)`.
+For example: `(filterRule1 OR filterRule2) AND (validateRule1 OR validateRule2)`.
 
 If ever there are two rules which you would like to be combined with an `AND`, these should be combined into a single rule. Take for instance the following example:
 
@@ -254,7 +258,7 @@ type User @authorization(validate: [
 }
 ----
 
-Say in this example we wanted it to be that a user needs to be an admin _and_ the `locked` property must be `false` in order to update a `User` node. We would need to combine these predicates into a single rule:
+If you want to combine the rule that a user must be an admin with the rule that the `locked` property must be `false` in order to update a `User` node, add them both to the `where` field using `AND` in a single rule:
 
 [source, graphql, indent=0]
 ----
