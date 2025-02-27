@@ -159,7 +159,8 @@ Additionally, some operations only support validation either before or after the
 
 |===
 
-As a brief example, if you wanted anybody to be able to attempt to update any post, but wanted to check that after the update, the author it is connected to is still the current user, you could do the following:
+As an example, let's say you want someone to be able to update a post.
+If you want to check that after the update the author of the post is still the current user,  do the following:
 
 [source, graphql, indent=0]
 ----
