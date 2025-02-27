@@ -244,9 +244,7 @@ type Post @authorization(filter: [
 In each ruleset (`filter` and `validate`), rules are joined with an `OR`.
 The two rulesets are joined with an `AND`.
 
-For example: `(filterRule1 OR filterRule2) AND (validateRule1 OR validateRule2)`.
-
-If ever there are two rules which you would like to be combined with an `AND`, these should be combined into a single rule. Take for instance the following example:
+For example, the following would allow for the update of a `User` node if the JWT roles claim includes `admin` _or_ if the `locked` property on the node is `false`:
 
 [source, graphql, indent=0]
 ----
