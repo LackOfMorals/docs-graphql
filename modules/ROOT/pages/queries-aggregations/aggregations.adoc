@@ -34,12 +34,31 @@ For which the following query fields are generated:
 ----
 type Query {
     posts(where: PostWhere, sort: [PostSort!]!, limit: Int, offset: Int,): [Post!]!
-    postsAggregate(where: PostWhere): PostAggregationSelection!
+    postsConnection(after: String, first: Int, sort: [PostSort], where: PostWhere): PostsConnection!
 
     users(where: UserWhere, sort: [UserSort!]!, limit: Int, offset: Int,): [User!]!
-    usersAggregate(where: UserWhere): UserAggregationSelection!
+    usersConnection(after: String, first: Int, sort: [UserSort], where: UserWhere): UsersConnection!
 }
 ----
+
+== Querying aggregations
+
+Aggregations on a type are provided in the field `aggregat` inside Connection:
+
+[source, graphql, indent=0]
+----
+query {
+    usersConnection {
+        aggregate {
+            name {
+                longest
+            }
+        }
+    }
+}
+----
+
+
 
 == Aggregation fields
 
@@ -56,28 +75,16 @@ a|
 [source, graphql, indent=0]
 ----
 query {
-    usersAggregate {
-        name {
-            longest
+    usersConnection {
+        aggregate {
+            name {
+                longest
+            }
         }
     }
 }
 ----
 
-| Numeric (e.g. `Int`, `Float`, `BigInt`)
-| `min`, `max`, `average`, `sum`
-a|
-.Example query
-[source, graphql, indent=0]
-----
-query {
-  usersAggregate {
-    age {
-      average
-    }
-  }
-}
----- 
 
 | Temporal (e.g. `DateTime`, `Time`, `LocalTime`, `LocalDateTime`, `Duration`)
 | `min`, `max`
@@ -86,33 +93,28 @@ a|
 [source, graphql, indent=0]
 ----
 query {
-    postsAggregate {
-        createdAt {
-            min
+    postsConnection {
+        aggregate {
+            createdAt {
+                min
+            }
         }
     }
 }
 ----
 |===
 
-[NOTE]
-====
-The argument `where` can also be used in aggregation queries for xref::queries-aggregations/filtering.adoc[filtering] data.
-====
-
-== Aggregate related nodes
-
-Related nodes can also be aggregated within a query by accessing the aggregation fields in the node.
-In these fields, you can **count**, aggregate the **nodes** or **edges** fields.
-
-The same selections and types as before are available in relationship aggregations.
 
 .Counting User nodes
 [source, graphql, indent=0]
 ----
 query {
-    usersAggregate {
-        count
+    usersConnection {
+        aggregate {
+            count {
+                nodes
+            }
+        }
     }
 }
 ----
@@ -121,11 +123,25 @@ query {
 [source, graphql, indent=0]
 ----
 query {
-    usersAggregate(where: { name_STARTS_WITH: "J" }) {
-        count
+    usersConnection(where: { name_STARTS_WITH: "J" }) {
+        aggregate {
+            count {
+                nodes
+            }
+        }
     }
 }
 ----
+
+
+== Aggregate related nodes
+
+Related nodes can also be aggregated within a query by accessing the aggregation fields in the connection.
+In these fields, you can **count**, aggregate the **nodes** or **edges** fields.
+
+The same selections and types as before are available in relationship aggregations.
+
+
 
 .Counting all posts per User
 [source, graphql, indent=0]
@@ -133,8 +149,12 @@ query {
 query {
     users {
         id
-        postsAggregate {
-            count
+        postsConnection {
+            aggregate {
+                count {
+                    nodes
+                }
+            }
         }
     }
 }
@@ -148,10 +168,12 @@ By using the `node` field, related nodes properties can be aggregated:
 query {
     users {
         name
-        postsAggregate {
-            node {
-                content {
-                  longest
+        postsConnection {
+            aggregate {
+                node {
+                    content {
+                    longest
+                    }
                 }
             }
         }
@@ -163,17 +185,36 @@ query {
 
 Relationship properties can be aggregated as well by using the `edge` field:
 
+.Counting edges between posts and users
+[source, graphql, indent=0]
+----
+query {
+    users {
+        id
+        postsConnection {
+            aggregate {
+                count {
+                    edges
+                }
+            }
+        }
+    }
+}
+----
+
 .Querying what User nodes posted up to a date
 [source, graphql, indent=0]
 ----
 query {
     users {
         name
-        postsAggregate {
-            edge {
-              date {
-                max
-              }
+        postsConnection {
+            aggregate {
+                edge {
+                    date {
+                        max
+                    }
+                }
             }
         }
     }
