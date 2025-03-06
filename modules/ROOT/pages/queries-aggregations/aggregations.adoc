@@ -43,7 +43,7 @@ type Query {
 
 == Querying aggregations
 
-Aggregations on a type are provided in the field `aggregat` inside Connection:
+Aggregations on a type are provided in the field `aggregate` inside Connection:
 
 [source, graphql, indent=0]
 ----
@@ -134,9 +134,9 @@ query {
 ----
 
 
-== Aggregate related nodes
+== Aggregating related nodes
 
-Related nodes can also be aggregated within a query by accessing the aggregation fields in the connection.
+You can aggregate related nodes in a query by accessing the aggregation fields in the connection.
 In these fields, you can **count**, aggregate the **nodes** or **edges** fields.
 
 The same selections and types as before are available in relationship aggregations.
