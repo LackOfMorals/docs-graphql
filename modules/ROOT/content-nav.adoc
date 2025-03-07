@@ -22,6 +22,7 @@
 ** xref:types/relationships.adoc[]
 * xref:directives/index.adoc[]
 ** xref:directives/database-mapping.adoc[]
+* xref:constructor-features.adoc[]
 
 ** xref:directives/autogeneration.adoc[]
 ** xref:directives/schema-configuration/index.adoc[]

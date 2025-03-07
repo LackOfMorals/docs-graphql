@@ -1,0 +1,79 @@
+
+= Constructor features
+:description: This section describes features that can be set in the constructor of the Neo4j GraphQL Library.
+
+You can set different features in the `features` field <1> of the Neo4j GraphQL constructor: 
+
+[source, javascript, indent=0]
+----
+export interface Neo4jGraphQLConstructor {
+    typeDefs: TypeDefinitions;
+    resolvers?: IExecutableSchemaDefinition["resolvers"];
+    features?: Neo4jFeaturesSettings; <1>
+    driver?: Driver;
+    debug?: boolean;
+    validate?: boolean;
+}
+----
+
+The `Neo4jFeaturesSettings` type looks like this:
+
+[source, javascript, indent=0]
+----
+export type Neo4jFeaturesSettings = {
+    filters?: Neo4jFiltersSettings;
+    populatedBy?: Neo4jPopulatedBySettings;
+    authorization?: Neo4jAuthorizationSettings;
+    subscriptions?: Neo4jGraphQLSubscriptionsEngine | boolean;
+    /** If set to `true`, removes `@neo4j/graphql` fields that are marked as deprecated to reduce schema size.
+     *
+     * NOTE: this will not remove user defined deprecated fields
+     **/
+    excludeDeprecatedFields?: {
+        bookmark?: boolean;
+        negationFilters?: boolean;
+        arrayFilters?: boolean;
+        stringAggregation?: boolean;
+        aggregationFilters?: boolean;
+        nestedUpdateOperationsFields?: boolean;
+    };
+    vector?: Neo4jVectorSettings;
+};
+----
+
+
+== Filter settings
+
+Use `Neo4jFiltersSettings` to enable numeric String comparisons and regular expression filters for Strings and IDs.
+They are disabled by default.
+See xref:queries-aggregations/filtering.adoc#_string_comparison[String comparison] and xref:queries-aggregations/filtering.adoc#_regex_matching[RegEx matching].
+
+
+== `populatedBy` settings
+
+Use the `populatedBy` field to register callback functions used by the `@populatedBy` directive.
+See xref:directives/custom-logic.adoc#_populatedby[`@populatedBy`].
+
+
+== Authorization settings
+
+Set authorization keys in the `authorization` field.
+See xref:security/configuration.adoc[Security > Configuration].
+
+
+== Subscription settings
+
+Enable the `subscriptions` feature of the Neo4j GraphQL Library by setting it to `true`.
+See xref:subscriptions/engines.adoc[Subscription engines].
+
+
+== Exclude deprecated fields
+
+If you are not using them, use `excludeDeprecatedFields` to disable the generation of various deprecated fields.
+See xref:optimization.adoc#_exclude_deprecated_fields[Exclude `@deprecated` fields].
+
+
+== Vector settings
+
+Set your GenAI provider credentials with the `vector` field.
+See xref:directives/indexes-and-constraints.adoc#_vector_index_search[`@vector`].
