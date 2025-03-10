@@ -20,10 +20,9 @@
 ** xref:types/interfaces.adoc[Interfaces]
 ** xref:types/unions.adoc[Union]
 ** xref:types/relationships.adoc[]
+* xref:constructor.adoc[]
 * xref:directives/index.adoc[]
 ** xref:directives/database-mapping.adoc[]
-* xref:constructor-features.adoc[]
-
 ** xref:directives/autogeneration.adoc[]
 ** xref:directives/schema-configuration/index.adoc[]
 *** xref:directives/schema-configuration/global-configuration.adoc[]
