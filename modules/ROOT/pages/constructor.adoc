@@ -15,7 +15,7 @@ export interface Neo4jGraphQLConstructor {
 }
 ----
 <1> See xref:types/index.adoc[].
-<2> ?
+<2> See xref:directives/custom-logic.adoc#_customresolver[Custom resolvers].
 <3> See xref:#_feature_settings[] on this page.
 <4> See xref:driver-configuration.adoc[].
 
