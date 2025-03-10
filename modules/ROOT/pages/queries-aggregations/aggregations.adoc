@@ -139,7 +139,7 @@ query {
 You can aggregate related nodes in a query by accessing the aggregation fields in the connection.
 In these fields, you can **count**, aggregate the **nodes** or **edges** fields.
 
-The same selections and types as before are available in relationship aggregations.
+The same selections and types as in xref:#_aggregation_fields[] are available in relationship aggregations.
 
 
 
