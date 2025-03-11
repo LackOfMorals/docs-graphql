@@ -1,7 +1,7 @@
-= Constructor
-:description: This section describes various setting field in the Neo4j GraphQL Library constructor.
+= The `Neo4jGraphQL` class
+:description: This section describes various setting field in the Neo4j GraphQL main class.
 
-You can set assign different setting fields in the Neo4j GraphQL constructor: 
+You can assign different setting fields in the Neo4j GraphQL constructor: 
 
 [source, javascript, indent=0]
 ----
