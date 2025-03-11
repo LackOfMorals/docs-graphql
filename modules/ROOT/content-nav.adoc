@@ -20,7 +20,7 @@
 ** xref:types/interfaces.adoc[Interfaces]
 ** xref:types/unions.adoc[Union]
 ** xref:types/relationships.adoc[]
-* xref:constructor.adoc[]
+* xref:neo4jgraphql-class.adoc[]
 * xref:directives/index.adoc[]
 ** xref:directives/database-mapping.adoc[]
 ** xref:directives/autogeneration.adoc[]
