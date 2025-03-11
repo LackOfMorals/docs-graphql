@@ -1,13 +1,13 @@
 = The `Neo4jGraphQL` class
 :description: This section describes various setting field in the Neo4j GraphQL main class.
 
-You can assign different setting fields in the Neo4j GraphQL constructor: 
+You can assign different setting fields in the Neo4jGraphQL constructor: 
 
 [source, javascript, indent=0]
 ----
 export interface Neo4jGraphQLConstructor {
-    typeDefs: TypeDefinitions;<1>
-    resolvers?: IExecutableSchemaDefinition["resolvers"];<2>
+    typeDefs: TypeDefinitions; <1>
+    resolvers?: IExecutableSchemaDefinition["resolvers"]; <2>
     features?: Neo4jFeaturesSettings; <3>
     driver?: Driver; <4>
     debug?: boolean;
