@@ -28,7 +28,7 @@ The `@unique` directive is no longer supported:
 [source, graphql, indent=0]
 ----
 type Movie {
-    title: String! @unique()
+    title: String! @unique
 }
 ----
 
@@ -56,7 +56,23 @@ type Movie {
 ----
 |===
 
-Single element relationships cannot be reliably enforced, leading to a data inconsistent with the schema.
+Single element relationships cannot be reliably enforced, leading to a data inconsistent with the schema. If the GraphQL model requires 1-1 relationships (such as in federations) these can now be achieved with the @cypher directive instead:
+
+
+[source, graphql, indent=0]
+----
+type Movie {
+    director: Person
+        @cypher(
+            statement: """
+            MATCH(this)-[:ACTED_IN]->(p:Person)
+            RETURN p
+            """
+            columnName: "p"
+        )
+}
+----
+
 
 
 === `overwrite`
@@ -68,8 +84,211 @@ This is part of the overarching changes to how `connect` operations work in 7.x.
 Instead, use the `update` operation to update a relationship.
 
 
-=== Removed the `connectOrCreate` operation
+=== Removed support for `connectOrCreate` operations
 
 The `connectOrCreate` operation has been removed due to limitations on its feature set when compared to other operations.
 
 `connectOrCreate` relies on `MERGE` operations in Cypher, which did not allow for `onCreate` operations to follow nested relationships.
+
+
+=== Remove `*aggregate` fields
+
+* Remove `deprecatedAggregateOperations` from the `excludeDeprecatedFields`
+
+=== Subscriptions are opt-in
+
+
+=== `Neo4jGraphQLSubscriptionsEngine` remove `publish` method
+
+=== When performing a connect operation, new relationships are always created
+
+=== Change results when 2 nodes have multiple relationships
+Changes the result projection where there are multiple relationships between two nodes.
+
+In the case of using the connection API then multiple relationships will still be represented, as there is the ability to select the relationship properties. In the non-connection API case, the duplicate results will only return distinct results.
+
+
+===  The `typename_IN` filter has been rmeoved in favor of `typename`
+
+=== Aggregations are no longer supported for ID fields.
+
+
+
+=== Remove `@private`` directive. This directive was intended to be used with the library `@neo4j/graphql-ogm` which is no longer supported.
+
+=== Fails schema generation if there are conflicting plural names in types. 
+
+For example, the following schema will fail, due to ambiguous `Techs` plural
+
+```graphql
+type Tech @node(plural: "Techs") {
+    name: String
+}
+
+type Techs {
+    value: String
+}
+```
+
+
+=== The deprecated directed argument has been removed, and queryDirection now only accepts two possible values - DIRECTED (default) and UNDIRECTED
+Additionally, the directedArgument setting of excludeDeprecatedFields has been removed as these deprecated fields have been removed.
+
+
+
+
+=== Full text
+There have been major changes to the way that full-text search operates.
+
+The directive now requires the specification of an index name, query name, and indexed fields
+
+```
+input FulltextInput {
+    indexName: String!
+    queryName: String!
+    fields: [String]!
+}
+
+"""
+Informs @neo4j/graphql that there should be a fulltext index in the database, allows users to search by the index in the generated schema.
+"""
+directive @fulltext(indexes: [FulltextInput]!) on OBJECT
+```
+
+Here is an example of how this might be used:
+```
+type Movie @node @fulltext(indexName: "movieTitleIndex", queryName: "moviesByTitle", fields: ["title"]) {
+    title: String!
+}
+```
+
+Full-text search was previously available in two different locations.
+
+The following form has now been completely removed:
+
+```
+{
+    movies(fulltext: { movieTitleIndex: { phrase: "The Matrix" } }) {
+        title
+    }
+}
+```
+
+The following form as a root-level query has been changed:
+
+```
+query {
+    moviesByTitle(phrase: "The Matrix") {
+        score
+        movies {
+            title
+        }
+    }
+}
+
+query {
+    moviesByTitle(phrase: "The Matrix") {
+        edges {
+            score
+            node {
+                title
+            }
+        }
+    }
+}
+```
+
+The new form is as a Relay connection, which allows for pagination using cursors and access to the pageInfo field.
+
+=== `@node` behaviour
+
+@node is now required, and GraphQL Object types without the directive @node will no longer considered as a Neo4j Nodes representation. Queries and Mutations will be generated only for types with the @node directive.
+
+=== Implicit filtering fields have been removed, please use the explicit versions:
+
+```graphql
+{
+    movies(where: { title: "The Matrix" }) {
+        title
+    }
+}
+
+{
+    movies(where: { title: { eq: "The Matrix" } }) {
+        title
+    }
+}
+```
+
+The `implicitEqualFilters` option of `excludeDeprecatedFields` has been removed.
+
+
+=== The deprecated `options`` argument has been removed.
+
+Consider the following type definitions:
+
+type Movie {
+    title: String!
+}
+
+The migration is as below:
+```
+# Old syntax
+{
+    movies(options: { first: 10, offset: 10, sort: [{ title: ASC }] }) {
+        title
+    }
+}
+
+# New syntax
+{
+    movies(first: 10, offset: 10, sort: [{ title: ASC }]) {
+        title
+    }
+}
+```
+
+The deprecatedOptionsArgument of excludeDeprecatedFields has been removed as it is now a no-op.
+
+=== Implicit set operations have been removed. 
+
+For example:
+
+```
+# Old syntax
+mutation {
+    updateMovies(where: { title_EQ: "Matrix" }, update: { title: "The Matrix" }) {
+        movies {
+            title
+        }
+    }
+}
+
+# New syntax
+mutation {
+    updateMovies(where: { title_EQ: "Matrix" }, update: { title_SET: "The Matrix" }) {
+        movies {
+            title
+        }
+    }
+}
+```
+
+The `implicitSet` argument of `excludeDeprecatedFields` has been removed.
+
+
+=== The Neo4j GraphQL Library and Introspector now required Node.js 22 or greater.
+
+=== `@coalesce` applies to return
+
+=== Set `addVersionPrefix` to true by default, this adds `CYPHER 5` to cypher queries 
+
+
+=== DateTime and Time values are now converted from strings into temporal types in the generated Cypher instead of in server code using the driver. 
+
+This could result in different values when the database is in a different timezone to the GraphQL server.
+
+
+=== Nested mutation operations now follow the relationship direction behaviour as defined in queryDirection
+
+
