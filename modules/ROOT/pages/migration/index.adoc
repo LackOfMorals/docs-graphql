@@ -312,9 +312,11 @@ The following fields have been added:
   - `implicitEqualFilters`
   - `deprecatedOptionsArgument`
   - `directedArgument`
-  - `directedArgument`
   - `connectOrCreate`
   - `typename_IN`
+  - `implicitSet`
+  - `idAggregations`
+  - `directedArgument`
 
 === Removed some `@cypher` fields from the sort argument
 
@@ -328,71 +330,16 @@ The following `@cypher` field types have been removed from the `sort` argument b
 
 Following the deprecation of the link:https://neo4j.com/docs/cypher-manual/current/planning-and-tuning/query-tuning/#cypher-connect-components-planner[`connectComponentsPlanner`], the field is no longer accepted in the GraphQL context and is removed from the `cypherQueryOptions` object.
 
-== Additions
-
-=== Added the `_EQ` filter as an alternative to the deprecated implicit equal filters
-
-The `count_EQ` filter is now available as an alternative to the deprecated `count` filter.
-
-[cols="1,1"]
-|===
-|Before | Now
-
-a|
-[source, graphql, indent=0]
-----
-{
-  movies(where: { actorsAggregate: { count: 10 } }) {
-    title
-  }
-}
-----
-a|
-[source, graphql, indent=0]
-----
-{
-  movies(where: { actorsAggregate: { count_EQ: 10 } }) {
-    title
-  }
-}
-----
-|===
-
-=== Added the `_EQ` filter as an alternative to the deprecated implicit "equal" filter
-
-The `_EQ` filter is now available as an alternative to the deprecated implicit "equal" filter.
-
-[cols="1,1"]
-|===
-|Before | Now
-
-a|
-[source, graphql, indent=0]
-----
-{
-  movies(where: { title: "The Matrix" }) {
-    title
-  }
-}
-
-----
-a|
-[source, graphql, indent=0]
-----
-{
-  movies(where: { title_EQ: "The Matrix" }) {
-    title
-  }
-}
-----
-|===
-
-== Deprecations and warnings
-
-=== Removed the Object Graph Mapper (OGM)
+=== Removed support for the Object Graph Mapper (OGM)
 
 The OGM is discontinued with version 6.0.0 of the GraphQL Library.
 Version 5 (LTS) is the last version to feature the link:{neo4j-docs-base-uri}/graphql/5/ogm[OGM].
+
+
+== Deprecations and warnings
+
+The following deprecations and warnings have been added to version 6. These will be removed in the next major version.
+
 
 === Implicit equality filters are deprecated
 
@@ -402,7 +349,7 @@ The following implicit equality filters are deprecated:
   - `{ count: 10 }` 
 
 You can achieve the same by using `{ name_EQ: "Keanu" }` and `{ count_EQ: 10 }`.
-The deprecated quality filters will be removed in version 7.x.
+The deprecated quality filters will be removed in version 7.
 
 [cols="1,1"]
 |===
@@ -429,6 +376,19 @@ query {
 }
 ----
 |===
+
+The `_EQ_` filters can be disabled from the generated schema with the option `implicitEqualFilters` set to `true`:
+
+[source, javascript]
+----
+new Neo4jGraphQL({
+    features: {
+        excludeDeprecatedFields: {
+            implicitEqualFilters: true
+        }
+    }
+})
+----
 
 === `@node` will have to be explicitly defined
 
@@ -466,36 +426,6 @@ type Person @node {
 ----
 |===
 
-=== Deprecated the implicit equality filters
-
-Previously, if a field was present in a filter without specifying the operator, it was treated as an equality filter.
-This behavior is now deprecated and will be removed in the future.
-Use the `_EQ` filter instead.
-
-[cols="1,1"]
-|===
-|Before | Now
-
-a|
-[source, graphql, indent=0]
-----
-{
-  movies(where: { title: "The Matrix" }) {
-    title
-  }
-}
-----
-a|
-[source, graphql, indent=0]
-----
-{
-  movies(where: { title_EQ: "The Matrix" }) {
-    title
-  }
-}
-----
-|===
-
 === Deprecated pagination `options` argument
 
 The `options` argument in query and `@relationship` fields is deprecated and will be removed in the future.
@@ -525,6 +455,19 @@ a|
 ----
 |===
 
+The `options` argument can be disabled from the generated schema with the option `deprecatedOptionsArgument` set to `true`:
+
+[source, graphql, indent=0]
+----
+new Neo4jGraphQL({
+    features: {
+        excludeDeprecatedFields: {
+            deprecatedOptionsArgument: true
+        }
+    }
+})
+----
+
 
 === Deprecated `directed` argument in `@relationship` fields
 
@@ -546,6 +489,21 @@ The `directed` argument was used to change the query direction of the relationsh
 The `directed` argument in `@relationship` fields is deprecated and will be removed in the future.
 Configure the query direction via the `queryDirection` and `direction` arguments of the `@relationship` directive instead.
 
+The `directed` argument can be disabled from the generated schema with the option `directedArgument` set to `true`:
+
+
+[source, javascript]
+----
+new Neo4jGraphQL({
+    features: {
+        excludeDeprecatedFields: {
+            directedArgument: true
+        }
+    }
+})
+----
+
+
 === Deprecated `@relationship.queryDirection` `_DEFAULT` and `_ONLY` options
 
 Following the deprecation of the `directed` argument, the values accepted by the `@relationship.queryDirection` have changed:
@@ -561,6 +519,255 @@ A warning is raised if you use a deprecated value.
 
 `typename_IN` filter has been deprecated in favor of `typename`.
 
+`typename_IN` can be disabled from the generated schema with the option `typename_IN` set to `true`:
+
+
+[source, javascript]
+----
+new Neo4jGraphQL({
+    features: {
+        excludeDeprecatedFields: {
+            typename_IN: true
+        }
+    }
+})
+----
+
 === Deprecated aggregations on ID fields
 
 Aggregations on ID fields are now deprecated and will be removed in the future.
+
+ID fields in aggregations can be disabled from the generated schema with the option `idAggregations` set to `true`:
+
+
+[source, javascript]
+----
+new Neo4jGraphQL({
+    features: {
+        excludeDeprecatedFields: {
+            idAggregations: true
+        }
+    }
+})
+----
+
+
+
+=== Deprecated `@unique` directive
+
+Unique directive will no longer be supported.
+
+No longer supported in future versions:
+[source, graphql, indent=0]
+----
+type Movie implements Production @node {
+    title: String! @unique
+    actors: [Actor!]! @relationship(type: "ACTED_IN", direction: IN, properties: "ActedIn")
+}
+----
+
+
+=== Deprecate `overwrite` argument in `connect`
+
+The `overwrite` argument in `connect` operations has been deprecated.
+This is part of the overarching changes to how `connect` operations work in 7.
+
+[source, graphql, indent=0]
+----
+mutation {
+  updateMovies(
+    where: { title_EQ: "Matrix" }
+    update: {
+      actors: {
+        connect: { overwrite: true, where: { node: { name_EQ: "Keanu" } } }
+      }
+    }
+  ) {
+    movies {
+      title
+    }
+  }
+}
+----
+
+
+=== Deprecated the `connectOrCreate` operations
+
+`connectOrCreate` mutations are deprecated and will be removed in the next major version:
+
+[source, graphql, indent=0]
+----
+mutation CreateActors {
+  updateActors(
+    update: {
+      movies: {
+        connectOrCreate: [{ where: { node: { title_EQ: "The Matrix" } } }]
+      }
+    }
+  ) {
+    actors {
+      name
+    }
+  }
+}
+----
+
+`connectOrCreate` mutations can be disabled from the generated schema with the option `connectOrCreate` set to `true`:
+
+
+[source, javascript]
+----
+new Neo4jGraphQL({
+    features: {
+        excludeDeprecatedFields: {
+            connectOrCreate: true
+        }
+    }
+})
+----
+
+
+=== Deprecated `*aggregate` fields
+
+Top level and nested `*Aggregate` fields have been deprecated in favor of `aggregate` fields inside connections: 
+
+[cols="1,1"]
+|===
+|Before | Now
+
+a|
+[source, graphql, indent=0]
+----
+query {
+    moviesAggregate {
+        rating {
+            min
+        }
+    }
+}
+----
+a|
+[source, graphql, indent=0]
+----
+query {
+    moviesConnection {
+        aggregate {
+            node {
+                rating {
+                    min
+                }
+            }
+        }
+    }
+}
+----
+|===
+
+
+`*aggregate` fields can be disabled from the generated schema with the option `deprecatedAggregateOperations` set to `true`:
+
+
+[source, javascript]
+----
+new Neo4jGraphQL({
+    features: {
+        excludeDeprecatedFields: {
+            deprecatedAggregateOperations: true
+        }
+    }
+})
+----
+
+
+==== `count` fields changes in new `aggregate` fields
+
+The `count` fields in `aggregate` are different to old `count`:
+
+[cols="1,1"]
+|===
+|Before | Now
+
+a|
+[source, graphql, indent=0]
+----
+query Movies {
+    moviesAggregate {
+        count
+    }
+}
+----
+a|
+[source, graphql, indent=0]
+----
+query {
+    moviesConnection {
+        aggregate {
+            count {
+                nodes
+            }
+        }
+    }
+}
+----
+|===
+
+
+=== Implicit set operation
+
+Setting fields in operations should append the operator `_SET`, the previous form using directly the field name is deprecated:
+
+[cols="1,1"]
+|===
+|Before | Now
+
+a|
+[source, graphql, indent=0]
+----
+mutation {
+  updateMovies(update: { title: "The Matrix" }) {
+    movies {
+      title
+    }
+  }
+}
+----
+a|
+[source, graphql, indent=0]
+----
+mutation {
+  updateMovies(update: { title_SET: "The Matrix" }) {
+    movies {
+      title
+    }
+  }
+}
+----
+|===
+
+
+
+Implicit set input fields can be disabled from the generated schema with the option `implicitSet` set to `true`:
+
+
+[source, javascript]
+----
+new Neo4jGraphQL({
+    features: {
+        excludeDeprecatedFields: {
+            implicitSet: true
+        }
+    }
+})
+----
+
+
+=== Deprecate `@private` directive
+
+This directive is deprecated and will be removed in the next version of the library. `@private` is intended to be used with the `OGM`, which is no longer supported.
+
+[source, graphql, indent=0]
+----
+type Movie @node {
+  title: String! @private
+}
+----
