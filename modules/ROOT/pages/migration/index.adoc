@@ -316,7 +316,6 @@ The following fields have been added:
   - `typename_IN`
   - `implicitSet`
   - `idAggregations`
-  - `directedArgument`
 
 === Removed some `@cypher` fields from the sort argument
 
@@ -338,7 +337,7 @@ Version 5 (LTS) is the last version to feature the link:{neo4j-docs-base-uri}/gr
 
 == Deprecations and warnings
 
-The following deprecations and warnings have been added to version 6. These will be removed in the next major version.
+Here is a list of deprecations and warnings from version 5.0.0 to 6.0.0.
 
 
 === Implicit equality filters are deprecated
@@ -555,9 +554,7 @@ new Neo4jGraphQL({
 
 === Deprecated `@unique` directive
 
-Unique directive will no longer be supported.
-
-No longer supported in future versions:
+The `@unique` directive will no longer be supported in future versions:
 [source, graphql, indent=0]
 ----
 type Movie implements Production @node {
@@ -567,10 +564,10 @@ type Movie implements Production @node {
 ----
 
 
-=== Deprecate `overwrite` argument in `connect`
+=== Deprecated `overwrite` argument in `connect`
 
 The `overwrite` argument in `connect` operations has been deprecated.
-This is part of the overarching changes to how `connect` operations work in 7.
+This is part of the overarching changes to how `connect` operations work in version 7.
 
 [source, graphql, indent=0]
 ----
@@ -591,9 +588,9 @@ mutation {
 ----
 
 
-=== Deprecated the `connectOrCreate` operations
+=== Deprecated `connectOrCreate` mutation
 
-`connectOrCreate` mutations are deprecated and will be removed in the next major version:
+The `connectOrCreate` mutation is deprecated and will be removed in the next major version:
 
 [source, graphql, indent=0]
 ----
@@ -679,9 +676,9 @@ new Neo4jGraphQL({
 ----
 
 
-==== `count` fields changes in new `aggregate` fields
+==== `count` field changes in new `aggregate` fields
 
-The `count` fields in `aggregate` are different to old `count`:
+The `count` field inside `aggregate` fields differs from the old `count` and now contains `nodes`:
 
 [cols="1,1"]
 |===
@@ -714,7 +711,8 @@ query {
 
 === Implicit set operation
 
-Setting fields in operations should append the operator `_SET`, the previous form using directly the field name is deprecated:
+Setting fields in operations must append the `_SET` operator.
+The previous format which only uses the field name is deprecated:
 
 [cols="1,1"]
 |===
@@ -761,9 +759,10 @@ new Neo4jGraphQL({
 ----
 
 
-=== Deprecate `@private` directive
+=== Deprecated `@private` directive
 
-This directive is deprecated and will be removed in the next version of the library. `@private` is intended to be used with the `OGM`, which is no longer supported.
+The `@private` directive is deprecated and will be removed in the next version of the library.
+`@private` was intended to be used with the OGM, which is no longer supported.
 
 [source, graphql, indent=0]
 ----
