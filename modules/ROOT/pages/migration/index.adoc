@@ -563,6 +563,8 @@ type Movie implements Production @node {
 }
 ----
 
+The `@unique` directive has been removed as it could not always be reliably enforced, potentially leading to data inconsistencies that did not match the schema.
+
 
 === Deprecated `overwrite` argument in `connect`
 
