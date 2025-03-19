@@ -557,7 +557,6 @@ new Neo4jGraphQL({
 The xref::/directives/indexes-and-constraints.adoc#_unique[`@unique`] directive will no longer be supported in future versions.
 It cannot always be reliably enforced, potentially leading to data inconsistencies that don't match the schema.
 
-The `@unique` directive has been removed as it could not always be reliably enforced, potentially leading to data inconsistencies that did not match the schema.
 
 
 === Deprecated `overwrite` argument in `connect`
