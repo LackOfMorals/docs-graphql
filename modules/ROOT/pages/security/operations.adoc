@@ -68,9 +68,11 @@ For an aggregation query, rules with `AGGREGATE` in the operations are evaluated
 [source, graphql, indent=0]
 ----
 query {
-    moviesAggregate { # AGGREGATE ON OBJECT Movie
-        title {       # AGGREGATE ON FIELD_DEFINITION Movie.title
-            longest
+    moviesConnection { 
+        aggregate {     # AGGREGATE ON OBJECT Movie
+            title {     # AGGREGATE ON FIELD_DEFINITION Movie.title
+                longest
+            }
         }
     }
 }
@@ -82,10 +84,12 @@ The same logic applies to aggregations of nested nodes:
 ----
 query {
     movies {
-        actorsAggregate {   # AGGREGATE ON OBJECT Actor
-            node {
-                name {      # AGGREGATE ON FIELD_DEFINITION Actor.name
-                    longest
+        actorsConnection {
+            aggregate {         # AGGREGATE ON OBJECT Actor
+                node {
+                    name {      # AGGREGATE ON FIELD_DEFINITION Actor.name
+                        longest
+                    }
                 }
             }
         }

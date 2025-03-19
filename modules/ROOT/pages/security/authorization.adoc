@@ -181,7 +181,7 @@ For example, consider a `User` type with a `password` field:
 
 [source, graphql, indent=0]
 ----
-type User {
+type User @node {
     id: ID!
     username: String!
     password: String! @authorization(where: [{ operations: [READ, UPDATE], where: { node: { id: "$jwt.sub" } } }])
