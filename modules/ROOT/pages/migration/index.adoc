@@ -624,7 +624,7 @@ new Neo4jGraphQL({
 ----
 
 
-=== Deprecated `*aggregate` fields
+=== Deprecated `*Aggregate` fields
 
 Top level and nested `*Aggregate` fields have been deprecated in favor of `aggregate` fields inside connections: 
 
@@ -661,7 +661,7 @@ query {
 |===
 
 
-`*aggregate` fields can be disabled from the generated schema with the option `deprecatedAggregateOperations` set to `true`:
+`*Aggregate` fields can be disabled from the generated schema with the option `deprecatedAggregateOperations` set to `true`:
 
 
 [source, javascript]
