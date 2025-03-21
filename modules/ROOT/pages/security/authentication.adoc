@@ -65,7 +65,7 @@ Authentication can be configured for an entire type:
 
 [source, graphql, indent=0]
 ----
-type User @authentication {
+type User @authentication @node {
     id: ID!
     name: String!
     password: String!
@@ -89,7 +89,7 @@ Authentication can be configured on a per-field basis, for example:
 
 [source, graphql, indent=0]
 ----
-type User {
+type User @node {
     id: ID!
     name: String!
     password: String! @authentication

@@ -56,7 +56,7 @@ For instance, to only require filtering for the reading and aggregating posts:
 [source, graphql, indent=0]
 ----
 type Post @node @authorization(filter: [
-    { operations: [READ, AGGREGATE] where: { node: { author: { id_EQ: "$jwt.sub" } } } }
+    { operations: [READ, AGGREGATE], where: { node: { author: { id_EQ: "$jwt.sub" } } } }
 ]) {
     title: String!
     content: String!
@@ -106,11 +106,10 @@ Validation can be configured to only be performed on certain operations:
 
 For instance, to only require validation for the update or deletion of a post:
 
-
 [source, graphql, indent=0]
 ----
 type Post @node @authorization(validate: [
-    { operations: [UPDATE, DELETE] where: { node: { author: { id_EQ: "$jwt.sub" } } } }
+    { operations: [UPDATE, DELETE], where: { node: { author: { id_EQ: "$jwt.sub" } } } }
 ]) {
     title: String!
     content: String!
@@ -122,6 +121,98 @@ type Post @node @authorization(validate: [
 ====
 In case there is no `operations` argument with a list of operations, the GraphQL Library treats the authorization configuration as if the full list of operations had been provided.
 ====
+
+=== When
+
+Validation can be configured to only be performed before or after an operation is executed. 
+This is done using the `when` argument which accepts an array of the following values:
+
+* `BEFORE`
+* `AFTER`
+
+Additionally, some operations only support validation either before or after them, which is summarised in this table:
+
+[cols="2,5"]
+|===
+| `operation` | `when`
+
+| `READ`
+| `BEFORE`
+
+| `AGGREGATE`
+| `BEFORE`
+
+| `CREATE`
+| `AFTER`
+
+| `UPDATE`
+| `BEFORE`, `AFTER`
+
+| `DELETE`
+| `BEFORE`
+
+| `CREATE_RELATIONSHIP`
+| `BEFORE`, `AFTER`
+
+| `DELETE_RELATIONSHIP`
+| `BEFORE`, `AFTER`
+
+|===
+
+As an example, let's say you want someone to be able to update a post.
+If you want to check that after the update the author of the post is still the current user,  do the following:
+
+[source, graphql, indent=0]
+----
+type Post @node @authorization(validate: [
+    { operations: [UPDATE], when: [AFTER], where: { node: { author: { id: "$jwt.sub" } } } }
+]) {
+    title: String!
+    content: String!
+    author: User! @relationship(type: "AUTHORED", direction: IN)
+}
+----
+
+== Authorization on fields 
+
+The `@authorization` directive can be used either on object types or their fields, with the former being used in examples for the most part on this page.
+When applied to a field, the authorization rules are only evaluated if the matching operations are performed on that field.
+For example, consider a `User` type with a `password` field:
+
+[source, graphql, indent=0]
+----
+type User @node {
+    id: ID!
+    username: String!
+    password: String! @authorization(where: [{ operations: [READ, UPDATE], where: { node: { id: "$jwt.sub" } } }])
+}
+----
+
+When executing the following query, a valid identity is not needed:
+
+[source, graphql, indent=0]
+----
+{
+    users {
+        username
+    }
+}
+----
+
+However, consider the following query:
+
+[source, graphql, indent=0]
+----
+{
+    users {
+        username
+        password
+    }
+}
+----
+
+This will require a valid JWT to have been provided with the request, and the matching users will be filtered down according to the JWT subject.
+The same applies for attempting to update the `password` field, the update will only apply to the user matching the JWT.
 
 
 == Authorization without authentication
@@ -145,5 +236,35 @@ type Post @node @authorization(filter: [
     content: String!
     public: Boolean!
     author: User! @relationship(type: "AUTHORED", direction: IN)
+}
+----
+
+== Ordering of rules
+
+In each ruleset (`filter` and `validate`), rules are joined with an `OR`.
+The two rulesets are joined with an `AND`.
+
+For example, the following would allow for the update of a `User` node if the JWT roles claim includes `admin` _or_ if the `locked` property on the node is `false`:
+
+[source, graphql, indent=0]
+----
+type User @node @authorization(validate: [
+    { operations: [UPDATE], where: { jwt: { roles_INCLUDES: "admin" } } }
+    { operations: [UPDATE], where: { node: { locked: false } } }
+]) {
+    id: ID!
+    locked: Boolean!
+}
+----
+
+If you want to combine the rule that a user must be an admin with the rule that the `locked` property must be `false` in order to update a `User` node, add them both to the `where` field using `AND` in a single rule:
+
+[source, graphql, indent=0]
+----
+type User @node @authorization(validate: [
+    { operations: [UPDATE], where: { AND: [{ jwt: { roles_INCLUDES: "admin" } }, { node: { locked: false } }] } }
+]) {
+    id: ID!
+    locked: Boolean!
 }
 ----

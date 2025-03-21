@@ -37,7 +37,69 @@ query {
 }
 ----
 
+=== Connection
+
+For a connection query, rules with `READ` in the operations are evaluated for any type being read:
+
+[source, graphql, indent=0]
+----
+query {
+    moviesConnection {
+        edges {
+            node {                 # READ ON OBJECT Movie
+                title              # READ ON FIELD_DEFINITION Movie.title
+                actorsConnection {
+                    edges {
+                        node {     # READ ON OBJECT Actor
+                            name   # READ ON FIELD_DEFINITION Actor.name
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+----
+
+=== Aggregation
+
+For an aggregation query, rules with `AGGREGATE` in the operations are evaluated for any type being aggregated:
+
+[source, graphql, indent=0]
+----
+query {
+    moviesConnection { 
+        aggregate {     # AGGREGATE ON OBJECT Movie
+            title {     # AGGREGATE ON FIELD_DEFINITION Movie.title
+                longest
+            }
+        }
+    }
+}
+----
+
+The same logic applies to aggregations of nested nodes:
+
+[source, graphql, indent=0]
+----
+query {
+    movies {
+        actorsConnection {
+            aggregate {         # AGGREGATE ON OBJECT Actor
+                node {
+                    name {      # AGGREGATE ON FIELD_DEFINITION Actor.name
+                        longest
+                    }
+                }
+            }
+        }
+    }
+}
+----
+
 == Mutation
+
+=== Create
 
 For `create` mutations, `CREATE` rules on the object are evaluated for each node created, as well as field definition rules:
 
@@ -55,6 +117,8 @@ mutation {
     }
 }
 ----
+
+=== Delete
 
 For single `delete` mutations, rules with `DELETE` on the object are evaluated:
 
@@ -80,6 +144,8 @@ mutation {
     }
 }
 ----
+
+=== Update
 
 For a complex `update` mutation with many effects, a variety of rules is evaluated, as well as `READ` rules for the selection set:
 
