@@ -71,6 +71,7 @@ See xref:security/configuration.adoc[Security > Configuration].
 === Subscription settings
 
 Enable the `subscriptions` feature of the Neo4j GraphQL Library by setting it to `true`.
+It is also used to provide subscription settings. See xref:subscriptions/customize-cdc.adoc[Subscription engines].
 
 
 === Exclude deprecated fields
