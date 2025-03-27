@@ -35,11 +35,11 @@ type User @node {
 }
 
 type Post @node @authorization(filter: [
-    { where: { node: { author: { id_EQ: "$jwt.sub" } } } }
+    { where: { node: { authors: { some: { id: { eq: "$jwt.sub" } } } } } }
 ]) {
     title: String!
     content: String!
-    author: User! @relationship(type: "AUTHORED", direction: IN)
+    authors: [User!]! @relationship(type: "AUTHORED", direction: IN)
 }
 ----
 
@@ -59,11 +59,11 @@ For instance, to only require filtering for the reading and aggregating posts:
 [source, graphql, indent=0]
 ----
 type Post @node @authorization(filter: [
-    { operations: [READ, AGGREGATE], where: { node: { author: { id_EQ: "$jwt.sub" } } } }
+    { operations: [READ, AGGREGATE], where: { node: { author: { id: { eq: "$jwt.sub" } } } } }
 ]) {
     title: String!
     content: String!
-    author: User! @relationship(type: "AUTHORED", direction: IN)
+    authors: [User!]! @relationship(type: "AUTHORED", direction: IN)
 }
 ----
 
@@ -88,8 +88,8 @@ type JWT @jwt {
 }
 
 type User @node @authorization(validate: [
-    { where: { node: { id_EQ: "$jwt.sub" } } }
-    { where: { jwt: { roles_INCLUDES: "admin" } } }
+    { where: { node: { id: { eq: "$jwt.sub" } } } }
+    { where: { jwt: { roles: { includes: "admin" } } } }
 ]) {
     id: ID!
 }
@@ -112,11 +112,14 @@ For instance, to only require validation for the update or deletion of a post:
 [source, graphql, indent=0]
 ----
 type Post @node @authorization(validate: [
-    { operations: [UPDATE, DELETE], where: { node: { author: { id_EQ: "$jwt.sub" } } } }
+    { 
+        operations: [UPDATE, DELETE]
+        where: { node: { authors: { some: { id: { eq: "$jwt.sub" } } } } } 
+    }
 ]) {
     title: String!
     content: String!
-    author: User! @relationship(type: "AUTHORED", direction: IN)
+    authors: [User!]! @relationship(type: "AUTHORED", direction: IN)
 }
 ----
 
@@ -232,13 +235,16 @@ type User @node {
 }
 
 type Post @node @authorization(filter: [
-    { where: { node: { author: { id_EQ: "$jwt.sub" } } } }
-    { requireAuthentication: false, operations: [READ], where: { node: { public_EQ: true } } }
+    {    
+        requireAuthentication: false,
+        operations: [READ],
+        where: { node: { public: { eq: true } } } 
+    }
 ]) {
     title: String!
     content: String!
     public: Boolean!
-    author: User! @relationship(type: "AUTHORED", direction: IN)
+    authors: [User!]! @relationship(type: "AUTHORED", direction: IN)
 }
 ----
 
