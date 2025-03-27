@@ -16,6 +16,7 @@ To update your Neo4j GraphQL Library, use npm or the package manager of choice:
 npm update @neo4j/graphql
 ----
 
+##TODO: Add a note about the multiple edges that are now queriable by the connection API
 == Breaking changes
 
 Here is a list of all the breaking changes from version 6.0.0 to 7.0.0.
@@ -24,7 +25,6 @@ Here is a list of all the breaking changes from version 6.0.0 to 7.0.0.
 
 The `@unique` directive is no longer supported:
 
-
 [source, graphql, indent=0]
 ----
 type Movie {
@@ -32,9 +32,154 @@ type Movie {
 }
 ----
 
-=== Deprecated single element relationships
+=== Removed implicit filtering fields
 
-Single element relationships have been deprecated in favor of list relationships:
+Implicit filtering fields have been removed. You must now use the explicit versions:
+
+[cols="1,1"]
+|===
+| Before | After
+
+a|
+[source, graphql, indent=0]
+----
+{
+  movies(where: { title: "The Matrix" }) {
+    title
+  }
+}
+----
+a|
+[source, graphql, indent=0]
+----
+{
+  movies(where: { title: { eq: "The Matrix" } }) {
+    title
+  }
+}
+----
+|===
+
+The `implicitEqualFilters` option of `excludeDeprecatedFields` has been removed.
+
+=== Required `@node` directive
+
+The `@node` directive is now required. GraphQL Object types without the `@node` directive will no longer be considered as Neo4j Node representations.
+
+Queries and Mutations will be generated only for types with the `@node` directive.
+
+[cols="1,1"]
+|===
+| Before | After
+
+a|
+[source, graphql, indent=0]
+----
+type Movie {
+  title: String!
+}
+----
+a|
+[source, graphql, indent=0]
+----
+type Movie @node {
+  title: String!
+}
+----
+|===
+
+
+=== Removed the deprecated `options` argument
+
+The deprecated `options` argument has been removed.
+
+Consider the following type definitions:
+
+[source, graphql, indent=0]
+----
+type Movie @node {
+  title: String!
+}
+----
+
+The migration is as below:
+
+[cols="1,1"]
+|===
+| Before | After
+
+a|
+[source, graphql, indent=0]
+----
+{
+  movies(options: { first: 10, offset: 10, sort: [{ title: ASC }] }) {
+    title
+  }
+}
+----
+a|
+[source, graphql, indent=0]
+----
+{
+  movies(first: 10, offset: 10, sort: [{ title: ASC }]) {
+    title
+  }
+}
+----
+|===
+
+The `deprecatedOptionsArgument` of `excludeDeprecatedFields` has been removed as it is now a no-op.
+
+=== Removed the deprecated `directed` argument
+
+The deprecated `directed` argument has been removed from queries. This argument previously allowed you to specify whether relationships should be directed or undirected at query time.
+
+Please use the `queryDirection` argument of the `@relationship` directive instead.
+
+The `directedArgument` setting of `excludeDeprecatedFields` has been removed as these deprecated fields have been removed.
+
+=== Changes to `queryDirection` values
+
+The `queryDirection` argument of the `@relationship` directive now only accepts two possible values:
+
+- `DIRECTED` (default)
+- `UNDIRECTED`
+
+=== The `typename_IN` filter has been renamed to `typename`
+
+The `typename_IN` filter has been renamed to just `typename` for better usability and consistency with other filters.
+
+[cols="1,1"]
+|===
+| Before | After
+
+a|
+[source, graphql, indent=0]
+----
+{
+  productions(where: { typename_IN: ["Movie", "Series"] }) {
+    title
+  }
+}
+----
+a|
+[source, graphql, indent=0]
+----
+{
+  productions(where: { typename: ["Movie", "Series"] }) {
+    title
+  }
+}
+----
+|===
+
+=== Aggregations are no longer generated for `ID` fields
+
+Aggregation operations for `ID` fields have been removed from the schema. 
+
+=== Single element relationships have been removed
+
+Single element relationships have been removed in favor of list relationships:
 
 [cols="1,1"]
 |===
@@ -58,7 +203,6 @@ type Movie {
 
 Single element relationships cannot be reliably enforced, leading to a data inconsistent with the schema. If the GraphQL model requires 1-1 relationships (such as in federations) these can now be achieved with the @cypher directive instead:
 
-
 [source, graphql, indent=0]
 ----
 type Movie {
@@ -73,222 +217,621 @@ type Movie {
 }
 ----
 
+=== Connect `overwrite` argument 
 
-
-=== `overwrite`
-
-
-The `overwrite` argument in `connect` operations has been deprecated.
-This is part of the overarching changes to how `connect` operations work in 7.x.
+Connect `overwrite` argument has been removed.
 
 Instead, use the `update` operation to update a relationship.
-
 
 === Removed support for `connectOrCreate` operations
 
 The `connectOrCreate` operation has been removed due to limitations on its feature set when compared to other operations.
 
-`connectOrCreate` relies on `MERGE` operations in Cypher, which did not allow for `onCreate` operations to follow nested relationships.
+=== Aggregate fields outside Connection fields have been removed
 
+Deprecated Aggregate fields have been removed from the schema. Use aggregation fields within the Connection fields instead.
 
-=== Remove `*aggregate` fields
+[cols="1,1"]
+|===
+| Before | After
 
-* Remove `deprecatedAggregateOperations` from the `excludeDeprecatedFields`
+a|
+[source, graphql, indent=0]
+----
+query {
+    usersAggregate {
+        count
+    }
+}
+----
+a|
+[source, graphql, indent=0]
+----
+query {
+    usersConnection {
+        aggregate {
+            count {
+                nodes
+            }
+        }
+    }
+}
+----
+|===
 
-=== Subscriptions are opt-in
+The option `deprecatedAggregateOperations` has been removed from the `excludeDeprecatedFields` setting.
 
+=== Subscriptions are now opt-in
 
-=== `Neo4jGraphQLSubscriptionsEngine` remove `publish` method
+Subscriptions were automatically generated for all `@node` types. In version 7.x, the `@subscription` directive is required to enable this functionality.
 
-=== When performing a connect operation, new relationships are always created
+You must now explicitly enable subscriptions using the `@subscription` directive in one of two ways:
 
-=== Change results when 2 nodes have multiple relationships
-Changes the result projection where there are multiple relationships between two nodes.
+- At the schema level to enable subscriptions for all types:
 
-In the case of using the connection API then multiple relationships will still be represented, as there is the ability to select the relationship properties. In the non-connection API case, the duplicate results will only return distinct results.
+[source, graphql, indent=0]
+----
+extend schema @subscription
+----
 
+- At the type level to enable subscriptions only for specific types:
 
-===  The `typename_IN` filter has been rmeoved in favor of `typename`
+[source, graphql, indent=0]
+----
+type Movie @node @subscription {
+    title: String!
+}
+----
 
-=== Aggregations are no longer supported for ID fields.
+=== Removed `publish` method from `Neo4jGraphQLSubscriptionsEngine`
 
+The `publish` method has been removed from the `Neo4jGraphQLSubscriptionsEngine` interface as it is no longer used with Change Data Capture (CDC) based subscriptions. 
 
+Implementing this method on custom engines will no longer have an effect, and it is no longer possible to call `publish` directly on `Neo4jGraphQLSubscriptionsCDCEngine`
 
-=== Remove `@private`` directive. This directive was intended to be used with the library `@neo4j/graphql-ogm` which is no longer supported.
+=== Connect operation allow multiple relationships to be created between two nodes
 
-=== Fails schema generation if there are conflicting plural names in types. 
+When performing a connect operation between two nodes a new relationship will be created, even if there is already a relationship between the two nodes.
 
-For example, the following schema will fail, due to ambiguous `Techs` plural
+=== Changed behavior for multiple relationships between nodes
 
-```graphql
+The way multiple relationships between the same two nodes are handled has changed:
+
+* In entity query fields (like `movies`), duplicate nodes will be removed and only distinct results will be returned, regardless of how many relationships exist between the nodes.
+
+* In connection query fields (like `moviesConnection`), all relationships will be represented individually. This allows for projecting relationship properties for each connection between the two nodes.
+
+=== The `@private` directive has been removed.
+
+This directive was intended to be used with the library `@neo4j/graphql-ogm` which is no longer supported.
+
+=== Schema generation fails if there are conflicting plural names in types
+
+For example, the following schema will fail due to ambiguous `Techs` plural:
+
+[source, graphql, indent=0]
+----
 type Tech @node(plural: "Techs") {
     name: String
 }
 
-type Techs {
+type Techs @node {
     value: String
 }
-```
+----
 
+=== Full-text search changes
 
-=== The deprecated directed argument has been removed, and queryDirection now only accepts two possible values - DIRECTED (default) and UNDIRECTED
-Additionally, the directedArgument setting of excludeDeprecatedFields has been removed as these deprecated fields have been removed.
+The `@fulltext` directive has been significantly changed and now requires an index name, a query name and fields to be indexed:
 
+[source, graphql, indent=0]
+----
+"""
+Informs @neo4j/graphql that there should be a fulltext index in the database, allowing users to search by the index in the generated schema.
+"""
+directive @fulltext(
+  indexes: [FulltextInput!]!
+) on OBJECT
 
-
-
-=== Full text
-There have been major changes to the way that full-text search operates.
-
-The directive now requires the specification of an index name, query name, and indexed fields
-
-```
 input FulltextInput {
-    indexName: String!
-    queryName: String!
-    fields: [String]!
+  indexName: String!
+  queryName: String!
+  fields: [String!]!
 }
+----
 
-"""
-Informs @neo4j/graphql that there should be a fulltext index in the database, allows users to search by the index in the generated schema.
-"""
-directive @fulltext(indexes: [FulltextInput]!) on OBJECT
-```
+Here is an example of how to use it:
 
-Here is an example of how this might be used:
-```
-type Movie @node @fulltext(indexName: "movieTitleIndex", queryName: "moviesByTitle", fields: ["title"]) {
-    title: String!
+[source, graphql, indent=0]
+----
+type Movie @node @fulltext(
+  indexes: [
+    {
+      indexName: "movieTitleIndex"
+      queryName: "moviesByTitle"
+      fields: ["title"]
+    }
+  ]
+) {
+  title: String!
 }
-```
+----
 
 Full-text search was previously available in two different locations.
 
 The following form has now been completely removed:
 
-```
+[source, graphql, indent=0]
+----
+# No longer supported
 {
-    movies(fulltext: { movieTitleIndex: { phrase: "The Matrix" } }) {
-        title
-    }
+  movies(fulltext: { movieTitleIndex: { phrase: "The Matrix" } }) {
+    title
+  }
 }
-```
+----
 
-The following form as a root-level query has been changed:
+The root-level query has been changed to use the Relay Cursor Connections Specification:
 
-```
+[cols="1,1"]
+|===
+| Before | After
+
+a|
+[source, graphql, indent=0]
+----
 query {
-    moviesByTitle(phrase: "The Matrix") {
-        score
-        movies {
-            title
-        }
+  moviesByTitle(phrase: "The Matrix") {
+    score
+    movies {
+      title
     }
+  }
 }
-
+----
+a|
+[source, graphql, indent=0]
+----
 query {
-    moviesByTitle(phrase: "The Matrix") {
-        edges {
-            score
-            node {
-                title
-            }
-        }
-    }
-}
-```
-
-The new form is as a Relay connection, which allows for pagination using cursors and access to the pageInfo field.
-
-=== `@node` behaviour
-
-@node is now required, and GraphQL Object types without the directive @node will no longer considered as a Neo4j Nodes representation. Queries and Mutations will be generated only for types with the @node directive.
-
-=== Implicit filtering fields have been removed, please use the explicit versions:
-
-```graphql
-{
-    movies(where: { title: "The Matrix" }) {
+  moviesByTitle(phrase: "The Matrix") {
+    edges {
+      score
+      node {
         title
+      }
     }
-}
-
-{
-    movies(where: { title: { eq: "The Matrix" } }) {
-        title
+    pageInfo {
+      hasNextPage
+      endCursor
     }
+  }
 }
-```
+----
+|===
 
-The `implicitEqualFilters` option of `excludeDeprecatedFields` has been removed.
+The new form uses the Relay Cursor Connections Specification, which allows for pagination using cursors and access to the `pageInfo` field.
 
+=== Removed implicit set operations
 
-=== The deprecated `options`` argument has been removed.
+Implicit set operations in update mutations have been removed and the migration path involves two steps:
 
-Consider the following type definitions:
+[cols="1,1"]
+|===
+| Before (Removed) | After (Desired Syntax)
 
-type Movie {
-    title: String!
-}
-
-The migration is as below:
-```
-# Old syntax
-{
-    movies(options: { first: 10, offset: 10, sort: [{ title: ASC }] }) {
-        title
-    }
-}
-
-# New syntax
-{
-    movies(first: 10, offset: 10, sort: [{ title: ASC }]) {
-        title
-    }
-}
-```
-
-The deprecatedOptionsArgument of excludeDeprecatedFields has been removed as it is now a no-op.
-
-=== Implicit set operations have been removed. 
-
-For example:
-
-```
-# Old syntax
+a|
+[source, graphql, indent=0]
+----
 mutation {
-    updateMovies(where: { title_EQ: "Matrix" }, update: { title: "The Matrix" }) {
-        movies {
-            title
-        }
+  updateMovies(
+    where: { title: { eq: "Matrix" } }, 
+    update: { title: "The Matrix" }
+  ) {
+    movies {
+      title
     }
+  }
 }
-
-# New syntax
+----
+a|
+[source, graphql, indent=0]
+----
 mutation {
-    updateMovies(where: { title_EQ: "Matrix" }, update: { title_SET: "The Matrix" }) {
-        movies {
-            title
-        }
+  updateMovies(
+    where: { title: { eq: "Matrix" } }, 
+    update: { title: { set: "The Matrix" } }
+  ) {
+    movies {
+      title
     }
+  }
 }
-```
+----
+|===
 
 The `implicitSet` argument of `excludeDeprecatedFields` has been removed.
 
+=== The Neo4j GraphQL Library and @neo4j/introspector now require Node.js 22 or greater
 
-=== The Neo4j GraphQL Library and Introspector now required Node.js 22 or greater.
+Version 7.0.0 of the Neo4j GraphQL Library and the @neo4j/introspector now require Node.js version 22 or greater. 
 
 === `@coalesce` applies to return
 
-=== Set `addVersionPrefix` to true by default, this adds `CYPHER 5` to cypher queries 
+=== Set `addVersionPrefix` to true by default
+
+In version 7.0.0, the `addVersionPrefix` option is now set to `true` by default. This means that all generated Cypher queries will automatically be prefixed with the Cypher version:
+
+[source, cypher, indent=0]
+----
+
+CYPHER 5
+MATCH(this:Movie)
+----
+
+This ensures that the correct Cypher version is used when queries are executed in Neo4j. However, this change may be incompatible with older versions of Neo4j.
+
+If you need to disable this behavior, you can set `cypherQueryOptions.addVersionPrefix` to `false` in the context:
+
+[source, javascript, indent=0]
+----
+{
+    cypherQueryOptions: {
+        addVersionPrefix: false,
+    },
+}
+----
+
+For example, when using Apollo Server:
+
+[source, javascript, indent=0]
+----
+await startStandaloneServer(server, {
+    context: async ({ req }) => ({
+        req,
+        cypherQueryOptions: {
+            addVersionPrefix: false,
+        },
+    }),
+    listen: { port: 4000 },
+});
+----
 
 
-=== DateTime and Time values are now converted from strings into temporal types in the generated Cypher instead of in server code using the driver. 
+=== Changed DateTime and Time value conversion behavior
 
-This could result in different values when the database is in a different timezone to the GraphQL server.
+In version 7.0.0, `DateTime` and `Time` values are now converted from strings into temporal types directly in the generated Cypher queries, rather than in server code using the Neo4j driver.
 
+For example, if you have a date string in your GraphQL query:
 
-=== Nested mutation operations now follow the relationship direction behaviour as defined in queryDirection
+[source, graphql, indent=0]
+----
+query {
+  movies(where: { releaseDate: { gt: "2023-01-15T12:30:00Z" } }) {
+    title
+    releaseDate
+  }
+}
+----
 
+The string value "2023-01-15T12:30:00Z" is now converted to a temporal type directly in the Cypher query:
 
+[source, cypher, indent=0]
+----
+MATCH (this:Movie)
+WHERE this.releaseDate > datetime($param0)
+RETURN this { .title, .releaseDate } as this
+----
+
+=== Mutation operations now follow the relationship direction defined in the @relationship argument queryDirection
+
+Mutation operations now respect the `queryDirection` value defined in the `@relationship` directive when matching existing relationships. This ensures consistent behavior between queries and mutations regarding how relationships are traversed.
+
+Important to note:
+
+- When creating new relationships, the physical direction stored in the database is still determined by the `direction` argument.
+- The change affects only how existing relationships are matched during  mutation operations.
+
+For example, consider the following schema:
+
+[source, graphql, indent=0]
+----
+type Movie @node {
+  title: String!
+  actors: [Person!]! @relationship(type: "ACTED_IN", direction: IN, queryDirection: UNDIRECTED)
+}
+
+type Person @node {
+  name: String!
+  movies: [Movie!]! @relationship(type: "ACTED_IN", direction: OUT, queryDirection: UNDIRECTED)
+}
+----
+
+With `queryDirection: UNDIRECTED`, mutations will now traverse existing relationships in both directions when matching nodes, regardless of the base `direction` value. This is consistent with how queries work with the same directive configuration.
+
+Previously, mutations would always follow the explicit `direction` value when matching existing relationships, which could lead to inconsistent behavior between queries and mutations.
+
+=== Moved `where` field in nested update operations
+
+The `where` field for nested update operations has been removed, in favour of the `where` inside the nested update input.
+
+[cols="1,1"]
+|===
+| Before | After
+
+a|
+[source, graphql, indent=0]
+----
+mutation {
+  updateUsers(
+    where: { name: { eq: "Darrell" } }
+    update: {
+      posts: {
+        where: { node: { title: { eq: "Version 7 Release Notes" } } }
+        update: { node: { title: { set: "Version 7 Release Announcement" } } }
+      }
+    }
+  ) {
+    users {
+      name
+      posts {
+        title
+      }
+    }
+  }
+}
+----
+a|
+[source, graphql, indent=0]
+----
+mutation {
+  updateUsers(
+    where: { name: { eq: "Darrell" } }
+    update: {
+      posts: {
+        update: {
+          where: { node: { title: { eq: "Version 7 Release Notes" } } }
+          node: { title: { set: "Version 7 Release Announcement" } }
+        }
+      }
+    }
+  ) {
+    users {
+      name
+      posts {
+        title
+      }
+    }
+  }
+}
+----
+|===
+
+== Deprecations
+
+=== Deprecated operators inside mutations
+
+The following operators:
+
+- `_SET`
+- `_POP`
+- `_PUSH`
+- `_INCREMENT`
+- `_ADD`
+- `_DECREMENT`
+- `_SUBTRACT`
+- `_MULTIPLY`
+- `_DIVIDE`
+
+ are now deprecated. You should now use the dedicated input object versions:
+
+[cols="1,1"]
+|===
+| Before | After
+
+a|
+[source, graphql, indent=0]
+----
+mutation {
+  updateMovies(
+    where: { title: { eq: "Matrix" } }, 
+    update: { title_SET: "The Matrix" }
+  ) {
+    movies {
+      title
+    }
+  }
+}
+----
+a|
+[source, graphql, indent=0]
+----
+mutation {
+  updateMovies(
+    where: { title: { eq: "Matrix" } }, 
+    update: { title: { set: "The Matrix" }  }
+  ) {
+    movies {
+      title
+    }
+  }
+}
+----
+|===
+
+The `excludeDeprecatedFields` setting now contains the option `mutationOperations` to remove these deprecated operators:
+
+[source, javascript, indent=0]
+----
+const neoSchema = new Neo4jGraphQL({
+  typeDefs,
+  excludeDeprecatedFields: {
+    mutationOperations: true
+  }
+});
+----
+
+=== Deprecated the _EQ filter syntax
+
+The `_EQ` filter syntax is now deprecated. You should now use the dedicated input object versions:
+
+[cols="1,1"]
+|===
+| Before | After
+
+a|
+[source, graphql, indent=0]
+----
+{
+  movies(where: { title_EQ: "The Matrix" }) {
+    title
+  }
+}
+----
+a|
+[source, graphql, indent=0]
+----
+{
+  movies(where: { title: { eq: "The Matrix" } }) {
+    title
+  }
+}
+----
+|===
+
+The `excludeDeprecatedFields` setting now contains the option `attributeFilters` to remove these deprecated filters:
+
+[source, javascript, indent=0]
+----
+const neoSchema = new Neo4jGraphQL({
+  typeDefs,
+  excludeDeprecatedFields: {
+    attributeFilters: true
+  }
+});
+----
+
+=== Deprecated aggregation filters outside connection fields
+
+The aggregation filters outside connection fields are now deprecated. You should use the aggregation filters within connection input fields instead:
+
+[cols="1,1"]
+|===
+| Before | After
+
+a|
+[source, graphql, indent=0]
+----
+{
+    posts(where: { likesAggregate: { node: { someInt: { average: { eq: 10 } } } } }) {
+        content
+    }
+}
+----
+a|
+[source, graphql, indent=0]
+----
+{
+    posts(where: { likesConnection: { aggregate: { node: { someInt: { average: { eq: 10 } } } } } }) {
+        content
+    }
+}
+----
+|===
+
+The `excludeDeprecatedFields` setting now contains the option `aggregationFiltersOutsideConnection` to remove these deprecated filters:
+
+[source, javascript, indent=0]
+----
+const neoSchema = new Neo4jGraphQL({
+  typeDefs,
+  excludeDeprecatedFields: {
+    aggregationFiltersOutsideConnection: true
+  }
+});
+----
+
+=== Deprecated Aggregation filters outside dedicated input
+
+Aggregation filters outside dedicated input like `_AVERAGE_GT` are now deprecated. You should use the dedicated input object versions:
+
+[cols="1,1"]
+|===
+| Before | After
+
+a|
+[source, graphql, indent=0]
+----
+query Movies {
+  movies(
+    where: { actorsAggregate: { node: { lastRating_AVERAGE_GT: 6 } } }
+  ) {
+    title
+  }
+}
+----
+a|
+[source, graphql, indent=0]
+----
+query Movies {
+  movies(
+    where: {
+      actorsAggregate: { node: { lastRating: { average: { gt: 6 } } } }
+    }
+  ) {
+    title
+  }
+}
+----
+|===
+
+The `excludeDeprecatedFields` setting now contains the option `aggregationFilters` to remove these deprecated filters:
+
+[source, javascript, indent=0]
+----
+const neoSchema = new Neo4jGraphQL({
+  typeDefs,
+  excludeDeprecatedFields: {
+    aggregationFilters: true
+  }
+});
+----
+
+=== Deprecated relationship filters outside dedicated input
+
+The relationship filtering syntax outside dedicated input like `_SOME`, `_ALL`, and `_NONE` is now deprecated. You should use the dedicated input object versions:
+
+[cols="1,1"]
+|===
+| Before | After
+
+a|
+[source, graphql, indent=0]
+----
+{
+  movies(where: { actors_SOME: { name_EQ: "Keanu Reeves" } }) {
+    title
+  }
+}
+----
+a|
+[source, graphql, indent=0]
+----
+{
+  movies(where: { actors: { some: { name: { eq: "Keanu Reeves" } } } }) {
+    title
+  }
+}
+----
+|===
+
+The `excludeDeprecatedFields` setting now contains the option `relationshipFilters` to remove these deprecated filters:
+
+[source, javascript, indent=0]
+----
+const neoSchema = new Neo4jGraphQL({
+  typeDefs,
+  excludeDeprecatedFields: {
+    relationshipFilters: true
+  }
+});
+----
