@@ -138,7 +138,7 @@ Please use the `queryDirection` argument of the `@relationship` directive instea
 
 The `directedArgument` setting of `excludeDeprecatedFields` has been removed.
 
-=== Changed `queryDirection` values
+=== Accepted values of the `queryDirection` argument of `@relationship` has been changed
 
 Following the removal of the `directed` argument,
 the `queryDirection` argument of the `@relationship` directive now only accepts two possible values:
@@ -183,9 +183,9 @@ a|
 
 The `typename_IN` setting of `excludeDeprecatedFields` has been removed.
 
-=== Aggregations are no longer available for `ID` fields
+=== Aggregations are no longer generated for `ID` fields
 
-`ID` fields are no longer included in aggregation fields and filters.
+`ID` fields are excluded from aggregation fields and aggregation filters.
 
 === Single element relationships have been removed
 
