@@ -16,7 +16,7 @@ To update your Neo4j GraphQL Library, use npm or the package manager of choice:
 npm update @neo4j/graphql
 ----
 
-##TODO: Add a note about the multiple edges that are now queriable by the connection API
+
 == Breaking changes
 
 Here is a list of all the breaking changes from version 6.0.0 to 7.0.0.
@@ -128,7 +128,7 @@ a|
 ----
 |===
 
-The `deprecatedOptionsArgument` of `excludeDeprecatedFields` has been removed as it is now a no-op.
+The `deprecatedOptionsArgument` of `excludeDeprecatedFields` has been removed.
 
 === Removed the deprecated `directed` argument
 
@@ -136,18 +136,26 @@ The deprecated `directed` argument has been removed from queries. This argument 
 
 Please use the `queryDirection` argument of the `@relationship` directive instead.
 
-The `directedArgument` setting of `excludeDeprecatedFields` has been removed as these deprecated fields have been removed.
+The `directedArgument` setting of `excludeDeprecatedFields` has been removed.
 
-=== Changes to `queryDirection` values
+=== Changed `queryDirection` values
 
-The `queryDirection` argument of the `@relationship` directive now only accepts two possible values:
+Following the removal of the `directed` argument,
+the `queryDirection` argument of the `@relationship` directive now only accepts two possible values:
 
 - `DIRECTED` (default)
 - `UNDIRECTED`
 
-=== The `typename_IN` filter has been renamed to `typename`
+The following values are no longer supported:
 
-The `typename_IN` filter has been renamed to just `typename` for better usability and consistency with other filters.
+ - `DEFAULT_DIRECTED`
+ - `DEFAULT_UNDIRECTED`
+ - `DIRECTED_ONLY`
+ - `UNDIRECTED_ONLY`
+
+=== The deprecated `typename_IN` filter has been removed
+
+The deprecated `typename_IN` filter has been removed, please use `typename` instead.
 
 [cols="1,1"]
 |===
@@ -173,9 +181,11 @@ a|
 ----
 |===
 
-=== Aggregations are no longer generated for `ID` fields
+The `typename_IN` setting of `excludeDeprecatedFields` has been removed.
 
-Aggregation operations for `ID` fields have been removed from the schema. 
+=== Aggregations are no longer available for `ID` fields
+
+`ID` fields are no longer included in aggregation fields and filters.
 
 === Single element relationships have been removed
 
@@ -188,24 +198,24 @@ Single element relationships have been removed in favor of list relationships:
 a|
 [source, graphql, indent=0]
 ----
-type Movie {
+type Movie @node {
     director: Person @relationship(type: "DIRECTED", direction: "IN")
 }
 ----
 a|
 [source, graphql, indent=0]
 ----
-type Movie {
+type Movie @node {
     director: [Person!]! @relationship(type: "DIRECTED", direction: "IN")
 }
 ----
 |===
 
-Single element relationships cannot be reliably enforced, leading to a data inconsistent with the schema. If the GraphQL model requires 1-1 relationships (such as in federations) these can now be achieved with the @cypher directive instead:
+Single element relationships cannot be reliably enforced, leading to a data inconsistent with the schema. If the GraphQL model requires 1-1 relationships (such as in federations) these can now be achieved with the `@cypher` directive instead:
 
 [source, graphql, indent=0]
 ----
-type Movie {
+type Movie @node {
     director: Person
         @cypher(
             statement: """
@@ -217,19 +227,41 @@ type Movie {
 }
 ----
 
-=== Connect `overwrite` argument 
+=== Connect `overwrite` argument has been removed 
 
-Connect `overwrite` argument has been removed.
+The `overwrite` argument has been removed in connect operations.
 
-Instead, use the `update` operation to update a relationship.
+In version 7.0.0, connect operations have been simplified to always create a new relationship between nodes, regardless of whether a relationship already exists.
+
+If you need to update an existing relationship instead of creating a new one, use the `update` operation:
+
+[source, graphql, indent=0]
+----
+mutation {
+  updateMovies(
+    update: {
+      actors: [
+        {
+          where: { node: { name: { eq: "Keanu" } } }
+          update: { edge: { role: { set: "Neo" } } }
+        }
+      ]
+    }
+  ) {
+    movies {
+      title
+    }
+  }
+}
+----
 
 === Removed support for `connectOrCreate` operations
 
 The `connectOrCreate` operation has been removed due to limitations on its feature set when compared to other operations.
 
-=== Aggregate fields outside Connection fields have been removed
+=== Aggregate fields outside connection fields have been removed
 
-Deprecated Aggregate fields have been removed from the schema. Use aggregation fields within the Connection fields instead.
+Deprecated aggregate fields have been removed from the schema. Use aggregation fields within the connection fields instead.
 
 [cols="1,1"]
 |===
@@ -263,7 +295,9 @@ The option `deprecatedAggregateOperations` has been removed from the `excludeDep
 
 === Subscriptions are now opt-in
 
-Subscriptions were automatically generated for all `@node` types. In version 7.x, the `@subscription` directive is required to enable this functionality.
+Subscriptions were automatically generated for all `@node` types.
+
+In version 7.x, the `@subscription` directive is required to enable this functionality.
 
 You must now explicitly enable subscriptions using the `@subscription` directive in one of two ways:
 
@@ -287,11 +321,13 @@ type Movie @node @subscription {
 
 The `publish` method has been removed from the `Neo4jGraphQLSubscriptionsEngine` interface as it is no longer used with Change Data Capture (CDC) based subscriptions. 
 
-Implementing this method on custom engines will no longer have an effect, and it is no longer possible to call `publish` directly on `Neo4jGraphQLSubscriptionsCDCEngine`
+Implementing this method on custom engines will no longer have an effect, and it is no longer possible to call `publish` directly on `Neo4jGraphQLSubscriptionsCDCEngine`.
 
-=== Connect operation allow multiple relationships to be created between two nodes
+=== Connect operations now support multiple relationships between the same nodes
 
-When performing a connect operation between two nodes a new relationship will be created, even if there is already a relationship between the two nodes.
+The connect operations have been enhanced to support creating multiple relationships between the same pair of nodes. When performing a connect operation between two nodes, a new relationship will always be created, even if one or more relationships of the same type already exist between those nodes.
+
+This enables modeling scenarios where multiple distinct relationships of the same type are needed between the same nodes. For example, an actor playing multiple roles in the same movie.
 
 === Changed behavior for multiple relationships between nodes
 
@@ -300,6 +336,102 @@ The way multiple relationships between the same two nodes are handled has change
 * In entity query fields (like `movies`), duplicate nodes will be removed and only distinct results will be returned, regardless of how many relationships exist between the nodes.
 
 * In connection query fields (like `moviesConnection`), all relationships will be represented individually. This allows for projecting relationship properties for each connection between the two nodes.
+
+For example, consider a scenario where Eddie Murphy played multiple roles in the same movie:
+
+[source, cypher, indent=0]
+----
+CREATE (eddie:Person {name: "Eddie Murphy"})
+CREATE (nuttyProfessor:Movie { title: "The Nutty Professor" })
+CREATE (eddie)-[:ACTED_IN { role: "Professor"}]->(nuttyProfessor)
+CREATE (eddie)-[:ACTED_IN { role: "Buddy Love"}]->(nuttyProfessor)
+----
+
+With a standard entity query:
+
+[source, graphql, indent=0]
+----
+{
+  actors(where: {name: {eq: "Eddie Murphy"}}) {
+    name 
+    movies {
+      title
+    }
+  }
+}
+----
+
+The result will show "The Nutty Professor" only once (nodes are deduplicated):
+
+[source, json, indent=0]
+----
+{
+  "actors": [
+    {
+      "name": "Eddie Murphy",
+      "movies": [
+        {
+          "title": "The Nutty Professor"
+        }
+      ]
+    }
+  ]
+}
+----
+
+However, with a connection query:
+
+[source, graphql, indent=0]
+----
+{
+  actors(where: { name: { eq: "Eddie Murphy" } }) {
+    name 
+    moviesConnection {
+      edges {
+        properties {
+          role
+        }
+        node {
+          title
+        }
+      }
+    }
+  }
+}
+----
+
+The result preserves both relationships with their distinct properties:
+
+[source, json, indent=0]
+----
+{
+  "actors": [
+    {
+      "name": "Eddie Murphy",
+      "moviesConnection": {
+        "edges": [
+          {
+            "properties": {
+              "role": "Professor"
+            },
+            "node": {
+              "title": "The Nutty Professor"
+            }
+          },
+          {
+            "properties": {
+              "role": "Buddy Love"
+            },
+            "node": {
+              "title": "The Nutty Professor"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+----
 
 === The `@private` directive has been removed.
 
@@ -411,9 +543,9 @@ query {
 
 The new form uses the Relay Cursor Connections Specification, which allows for pagination using cursors and access to the `pageInfo` field.
 
-=== Removed implicit set operations
+=== Removed implicit set operation
 
-Implicit set operations in update mutations have been removed and the migration path involves two steps:
+Implicit set operation in update mutations have been removed and the migration path involves two steps:
 
 [cols="1,1"]
 |===
@@ -455,7 +587,61 @@ The `implicitSet` argument of `excludeDeprecatedFields` has been removed.
 
 Version 7.0.0 of the Neo4j GraphQL Library and the @neo4j/introspector now require Node.js version 22 or greater. 
 
-=== `@coalesce` applies to return
+=== `@coalesce` directive affects projection field values
+
+In version 7.0.0, the `@coalesce` directive now applies to both filter operations and field projections. Previously, the fallback values specified in the `@coalesce` directive were only used when those fields were used in filters, but not on the returned fields.
+
+Now, when you select a field annotated with `@coalesce`, null values will be replaced with the specified fallback value in the query result.
+
+Consider this schema:
+
+[source, graphql, indent=0]
+----
+type Movie @node {
+  title: String!
+  rating: Float @coalesce(value: 5.0)
+}
+----
+
+Previously, requesting a movie with a null rating would return:
+
+[source, graphql, indent=0]
+----
+query {
+  movies {
+    title
+    rating  # Would return null if the rating wasn't set
+  }
+}
+----
+
+[source, json, indent=0]
+----
+{
+  "movies": [
+    {
+      "title": "The Matrix",
+      "rating": null
+    }
+  ]
+}
+----
+
+Now, the same query will return the coalesced value:
+
+[source, json, indent=0]
+----
+{
+  "movies": [
+    {
+      "title": "The Matrix",
+      "rating": 5.0  # Returns the fallback value specified in @coalesce
+    }
+  ]
+}
+----
+
+This ensures consistent behavior between filtering and projecting fields with the `@coalesce` directive.
 
 === Set `addVersionPrefix` to true by default
 
@@ -522,14 +708,14 @@ WHERE this.releaseDate > datetime($param0)
 RETURN this { .title, .releaseDate } as this
 ----
 
-=== Mutation operations now follow the relationship direction defined in the @relationship argument queryDirection
+=== Mutation operations now follow the relationship direction defined in the `@relationship` argument queryDirection
 
 Mutation operations now respect the `queryDirection` value defined in the `@relationship` directive when matching existing relationships. This ensures consistent behavior between queries and mutations regarding how relationships are traversed.
 
 Important to note:
 
 - When creating new relationships, the physical direction stored in the database is still determined by the `direction` argument.
-- The change affects only how existing relationships are matched during  mutation operations.
+- The change affects only how existing relationships are matched during mutation operations.
 
 For example, consider the following schema:
 
@@ -606,9 +792,50 @@ mutation {
 ----
 |===
 
+=== Changed behavior for `single` and `some` filters on relationships to unions
+
+The behavior of `single` and `some` filters when used with relationships to union types has been fixed, which represents a breaking change from the previous incorrect implementation.
+
+Consider this schema with a union type and a relationship to it:
+
+[source, graphql, indent=0]
+----
+union Production = Movie | Series
+
+type Actor @node {
+    name: String!
+    actedIn: [Production!]! @relationship(type: "ACTED_IN", direction: OUT)
+}
+----
+
+Previously, when using `single` or `some` filters with unions, conditions inside these filters were evaluated separately for each concrete type in the union, requiring all of them to match. This was incorrect behavior.
+
+[source, graphql, indent=0]
+----
+query {
+    actors(
+        where: {
+            actedIn: { single: { Movie: { title: { contains: "The Office" } }, Series: { title: { endsWith: "Office" } } } }
+        }
+    ) {
+        name
+    }
+}
+----
+
+The fixed behavior in version 7.0.0:
+
+* `single`: Now correctly returns actors with exactly one related node across the whole union, rather than per type.
+* `some`: Now correctly returns actors with at least one matching related node of any type in the union.
+
+This change provides more logical and consistent results, but may affect existing queries that relied on the previous behavior.
+
+This fix applies to both the new filter syntax and the deprecated filters (e.g., `actedIn_SINGLE` and `actedIn_SOME`).
+
+
 == Deprecations
 
-=== Deprecated operators inside mutations
+=== Deprecated mutations operators outside dedicated input
 
 The following operators:
 
@@ -622,7 +849,7 @@ The following operators:
 - `_MULTIPLY`
 - `_DIVIDE`
 
- are now deprecated. You should now use the dedicated input object versions:
+are now deprecated. You should now use the dedicated input object versions:
 
 [cols="1,1"]
 |===
