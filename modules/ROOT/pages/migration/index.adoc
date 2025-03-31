@@ -23,18 +23,11 @@ Here is a list of all the breaking changes from version 6.0.0 to 7.0.0.
 
 === Removed the `@unique` directive
 
-The `@unique` directive is no longer supported:
-
-[source, graphql, indent=0]
-----
-type Movie {
-    title: String! @unique
-}
-----
+The `@unique` directive is no longer supported. 
 
 === Removed implicit filtering fields
 
-Implicit filtering fields have been removed. You must now use the explicit versions:
+Implicit equality filtering fields have been removed. You must now use the dedicate input versions:
 
 [cols="1,1"]
 |===
@@ -128,7 +121,7 @@ a|
 ----
 |===
 
-The `deprecatedOptionsArgument` of `excludeDeprecatedFields` has been removed.
+The `deprecatedOptionsArgument` option of `excludeDeprecatedFields` has been removed.
 
 === Removed the deprecated `directed` argument
 
@@ -136,12 +129,11 @@ The deprecated `directed` argument has been removed from queries. This argument 
 
 Please use the `queryDirection` argument of the `@relationship` directive instead.
 
-The `directedArgument` setting of `excludeDeprecatedFields` has been removed.
+The `directedArgument` option of `excludeDeprecatedFields` has been removed.
 
 === Accepted values of the `queryDirection` argument of `@relationship` has been changed
 
-Following the removal of the `directed` argument,
-the `queryDirection` argument of the `@relationship` directive now only accepts two possible values:
+Following the removal of the `directed` argument, the `queryDirection` argument of the `@relationship` directive now only accepts two possible values:
 
 - `DIRECTED` (default)
 - `UNDIRECTED`
@@ -181,11 +173,11 @@ a|
 ----
 |===
 
-The `typename_IN` setting of `excludeDeprecatedFields` has been removed.
+The `typename_IN` option of `excludeDeprecatedFields` has been removed.
 
 === Aggregations are no longer generated for `ID` fields
 
-`ID` fields are excluded from aggregation fields and aggregation filters.
+`ID` fields are excluded from aggregation selection sets and aggregation filters.
 
 === Single element relationships have been removed
 
@@ -211,7 +203,7 @@ type Movie @node {
 ----
 |===
 
-Single element relationships cannot be reliably enforced, leading to a data inconsistent with the schema. If the GraphQL model requires 1-1 relationships (such as in federations) these can now be achieved with the `@cypher` directive instead:
+Single element relationships cannot be reliably enforced, leading to data inconsistent with the schema. If the GraphQL model requires 1-1 relationships (such as in federations) these can now be achieved with the `@cypher` directive instead:
 
 [source, graphql, indent=0]
 ----
@@ -219,7 +211,7 @@ type Movie @node {
     director: Person
         @cypher(
             statement: """
-            MATCH(this)-[:ACTED_IN]->(p:Person)
+            MATCH (this)-[:ACTED_IN]->(p:Person)
             RETURN p
             """
             columnName: "p"
@@ -261,7 +253,7 @@ The `connectOrCreate` operation has been removed due to limitations on its featu
 
 === Aggregate fields outside connection fields have been removed
 
-Deprecated aggregate fields have been removed from the schema. Use aggregation fields within the connection fields instead.
+Deprecated aggregate fields have been removed from the schema. Use aggregation fields within the connection selection set instead.
 
 [cols="1,1"]
 |===
@@ -291,11 +283,11 @@ query {
 ----
 |===
 
-The option `deprecatedAggregateOperations` has been removed from the `excludeDeprecatedFields` setting.
+The `deprecatedAggregateOperations` option has been removed from the `excludeDeprecatedFields` setting.
 
 === Subscriptions are now opt-in
 
-Subscriptions were automatically generated for all `@node` types.
+Subscriptions are no longer automatically generated for all `@node` types.
 
 In version 7.x, the `@subscription` directive is required to enable this functionality.
 
@@ -543,9 +535,9 @@ query {
 
 The new form uses the Relay Cursor Connections Specification, which allows for pagination using cursors and access to the `pageInfo` field.
 
-=== Removed implicit set operation
+=== Removed implicit set operations
 
-Implicit set operation in update mutations have been removed and the migration path involves two steps:
+Implicit set operations in update mutations have been removed and the migration path involves two steps:
 
 [cols="1,1"]
 |===
@@ -581,7 +573,7 @@ mutation {
 ----
 |===
 
-The `implicitSet` argument of `excludeDeprecatedFields` has been removed.
+The `implicitSet` option of `excludeDeprecatedFields` has been removed.
 
 === The Neo4j GraphQL Library and @neo4j/introspector now require Node.js 22 or greater
 
@@ -885,7 +877,7 @@ mutation {
 ----
 |===
 
-The `excludeDeprecatedFields` setting now contains the option `mutationOperations` to remove these deprecated operators:
+The `excludeDeprecatedFields` option now contains the option `mutationOperations` to remove these deprecated operators:
 
 [source, javascript, indent=0]
 ----
@@ -925,7 +917,7 @@ a|
 ----
 |===
 
-The `excludeDeprecatedFields` setting now contains the option `attributeFilters` to remove these deprecated filters:
+The `excludeDeprecatedFields` option now contains the option `attributeFilters` to remove these deprecated filters:
 
 [source, javascript, indent=0]
 ----
@@ -965,7 +957,7 @@ a|
 ----
 |===
 
-The `excludeDeprecatedFields` setting now contains the option `aggregationFiltersOutsideConnection` to remove these deprecated filters:
+The `excludeDeprecatedFields` option now contains the option `aggregationFiltersOutsideConnection` to remove these deprecated filters:
 
 [source, javascript, indent=0]
 ----
@@ -1011,7 +1003,7 @@ query Movies {
 ----
 |===
 
-The `excludeDeprecatedFields` setting now contains the option `aggregationFilters` to remove these deprecated filters:
+The `excludeDeprecatedFields` option now contains the option `aggregationFilters` to remove these deprecated filters:
 
 [source, javascript, indent=0]
 ----
@@ -1051,7 +1043,7 @@ a|
 ----
 |===
 
-The `excludeDeprecatedFields` setting now contains the option `relationshipFilters` to remove these deprecated filters:
+The `excludeDeprecatedFields` option now contains the option `relationshipFilters` to remove these deprecated filters:
 
 [source, javascript, indent=0]
 ----
