@@ -97,7 +97,7 @@ query {
 
 [NOTE]
 ====
-The argument `where` can also be used in aggregation queries for xref::queries-aggregations/filtering.adoc[filtering] data.
+The argument `where` can also be used in aggregation queries for xref::filtering.adoc[filtering] data.
 ====
 
 == Aggregate related nodes

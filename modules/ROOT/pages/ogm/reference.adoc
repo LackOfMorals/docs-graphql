@@ -200,7 +200,7 @@ This method can be used to aggregate nodes, and maps to the underlying schema xr
 
 |`where`
 |`GraphQLWhereArg`
-|A JavaScript object representation of the GraphQL `where` input type used for xref::queries-aggregations/filtering.adoc[Filtering].
+|A JavaScript object representation of the GraphQL `where` input type used for xref::filtering.adoc[Filtering].
 |===
 
 ==== Example
@@ -310,7 +310,7 @@ It returns a `Promise` which resolves to a `DeleteInfo` object:
 
 |`where`
 |`GraphQLWhereArg`
-|A JavaScript object representation of the GraphQL `where` input type used for xref::queries-aggregations/filtering.adoc[Filtering].
+|A JavaScript object representation of the GraphQL `where` input type used for xref::filtering.adoc[Filtering].
 
 |`delete`
 |`string` or `DocumentNode` or `SelectionSetNode`
@@ -350,11 +350,11 @@ It returns a `Promise` which resolves to an array of objects matching the type o
 
 |`where`
 |`GraphQLWhereArg`
-|A JavaScript object representation of the GraphQL `where` input type used for xref::queries-aggregations/filtering.adoc[Filtering].
+|A JavaScript object representation of the GraphQL `where` input type used for xref::filtering.adoc[Filtering].
 
 |`options`
 |`GraphQLOptionsArg`
-|A JavaScript object representation of the GraphQL `options` input type used for xref::queries-aggregations/sorting.adoc[Sorting] and xref::/queries-aggregations/pagination/index.adoc[Pagination].
+|A JavaScript object representation of the GraphQL `options` input type used for xref::queries-aggregations/sorting.adoc[Sorting] and xref::/queries-aggregations/pagination.adoc[Pagination].
 
 |`selectionSet` 
 |`string` or `DocumentNode` or `SelectionSetNode`
@@ -408,7 +408,7 @@ It returns a `Promise` that resolves to the equivalent of the mutation response 
 
 |`where`
 |`GraphQLWhereArg`
-|A JavaScript object representation of the GraphQL `where` input type used for xref::queries-aggregations/filtering.adoc[Filtering].
+|A JavaScript object representation of the GraphQL `where` input type used for xref::filtering.adoc[Filtering].
 
 |`update`
 |`any`
@@ -428,7 +428,7 @@ It returns a `Promise` that resolves to the equivalent of the mutation response 
 
 |`options`
 |`GraphQLOptionsArg`
-|A JavaScript object representation of the GraphQL `options` input type used for xref::queries-aggregations/sorting.adoc[Sorting] and xref::/queries-aggregations/pagination/index.adoc[Pagination].
+|A JavaScript object representation of the GraphQL `options` input type used for xref::queries-aggregations/sorting.adoc[Sorting] and xref::/queries-aggregations/pagination.adoc[Pagination].
 
 |`selectionSet`
 |`string` or `DocumentNode` or `SelectionSetNode`

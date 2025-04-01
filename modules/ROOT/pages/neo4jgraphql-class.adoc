@@ -53,7 +53,7 @@ export type Neo4jFeaturesSettings = {
 
 Use `Neo4jFiltersSettings` to enable numeric String comparisons and regular expression filters for Strings and IDs.
 They are disabled by default.
-See xref:queries-aggregations/filtering.adoc#_string_comparison[String comparison] and xref:queries-aggregations/filtering.adoc#_regex_matching[RegEx matching].
+See xref:filtering.adoc#_string_comparison[String comparison] and xref:filtering.adoc#_regex_matching[RegEx matching].
 
 
 === `populatedBy` settings
