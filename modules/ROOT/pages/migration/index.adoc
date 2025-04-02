@@ -23,11 +23,13 @@ Here is a list of all the breaking changes from version 6.0.0 to 7.0.0.
 
 === Removed the `@unique` directive
 
-The `@unique` directive is no longer supported. 
+The `@unique` directive is no longer supported.
+It cannot always be reliably enforced, potentially leading to data inconsistencies that don't match the schema.
 
 === Removed implicit filtering fields
 
-Implicit equality filtering fields have been removed. You must now use the dedicate input versions:
+Implicit equality filtering fields have been removed.
+Use the dedicated `eq` field instead:
 
 [cols="1,1"]
 |===
@@ -57,9 +59,9 @@ The `implicitEqualFilters` option of `excludeDeprecatedFields` has been removed.
 
 === Required `@node` directive
 
-The `@node` directive is now required. GraphQL Object types without the `@node` directive will no longer be considered as Neo4j Node representations.
-
-Queries and Mutations will be generated only for types with the `@node` directive.
+The `@node` directive is now required.
+GraphQL object types without the `@node` directive are no longer considered Neo4j node representations.
+Queries and mutations are only generated for types with the `@node` directive.
 
 [cols="1,1"]
 |===
@@ -86,7 +88,7 @@ type Movie @node {
 
 The deprecated `options` argument has been removed.
 
-Consider the following type definitions:
+Consider the following type definition:
 
 [source, graphql, indent=0]
 ----
@@ -95,7 +97,7 @@ type Movie @node {
 }
 ----
 
-The migration is as below:
+The following shows the difference for options:
 
 [cols="1,1"]
 |===
@@ -125,13 +127,13 @@ The `deprecatedOptionsArgument` option of `excludeDeprecatedFields` has been rem
 
 === Removed the deprecated `directed` argument
 
-The deprecated `directed` argument has been removed from queries. This argument previously allowed you to specify whether relationships should be directed or undirected at query time.
-
-Please use the `queryDirection` argument of the `@relationship` directive instead.
+The deprecated `directed` argument has been removed from queries.
+This argument previously allowed you to specify whether relationships should be directed or undirected at query time.
+Use the `queryDirection` argument of the `@relationship` directive instead.
 
 The `directedArgument` option of `excludeDeprecatedFields` has been removed.
 
-=== Accepted values of the `queryDirection` argument of `@relationship` has been changed
+=== Changed the accepted values of the `queryDirection` argument of `@relationship`
 
 Following the removal of the `directed` argument, the `queryDirection` argument of the `@relationship` directive now only accepts two possible values:
 
@@ -145,9 +147,10 @@ The following values are no longer supported:
  - `DIRECTED_ONLY`
  - `UNDIRECTED_ONLY`
 
-=== The deprecated `typename_IN` filter has been removed
+=== Removed the deprecated `typename_IN` filter
 
-The deprecated `typename_IN` filter has been removed, please use `typename` instead.
+The deprecated `typename_IN` filter has been removed.
+Use `typename` instead.
 
 [cols="1,1"]
 |===
@@ -179,7 +182,7 @@ The `typename_IN` option of `excludeDeprecatedFields` has been removed.
 
 `ID` fields are excluded from aggregation selection sets and aggregation filters.
 
-=== Single element relationships have been removed
+=== Removed single element relationships
 
 Single element relationships have been removed in favor of list relationships:
 
@@ -203,7 +206,8 @@ type Movie @node {
 ----
 |===
 
-Single element relationships cannot be reliably enforced, leading to data inconsistent with the schema. If the GraphQL model requires 1-1 relationships (such as in federations) these can now be achieved with the `@cypher` directive instead:
+Single element relationships cannot be reliably enforced, leading to data inconsistent with the schema.
+If the GraphQL model requires one-to-one relationships (such as in federations) these can now be created with the `@cypher` directive instead:
 
 [source, graphql, indent=0]
 ----
@@ -219,13 +223,14 @@ type Movie @node {
 }
 ----
 
-=== Connect `overwrite` argument has been removed 
+=== Removed the connect `overwrite` argument
 
 The `overwrite` argument has been removed in connect operations.
 
 In version 7.0.0, connect operations have been simplified to always create a new relationship between nodes, regardless of whether a relationship already exists.
+See xref:#connect-operation-details[].
 
-If you need to update an existing relationship instead of creating a new one, use the `update` operation:
+If you must update an existing relationship instead of creating a new one, use the `update` operation:
 
 [source, graphql, indent=0]
 ----
@@ -251,9 +256,10 @@ mutation {
 
 The `connectOrCreate` operation has been removed due to limitations on its feature set when compared to other operations.
 
-=== Aggregate fields outside connection fields have been removed
+=== Removed aggregate fields outside connection fields
 
-Deprecated aggregate fields have been removed from the schema. Use aggregation fields within the connection selection set instead.
+Deprecated aggregate fields have been removed from the schema.
+Use aggregation fields within the connection selection set instead.
 
 [cols="1,1"]
 |===
@@ -288,9 +294,7 @@ The `deprecatedAggregateOperations` option has been removed from the `excludeDep
 === Subscriptions are now opt-in
 
 Subscriptions are no longer automatically generated for all `@node` types.
-
 In version 7.x, the `@subscription` directive is required to enable this functionality.
-
 You must now explicitly enable subscriptions using the `@subscription` directive in one of two ways:
 
 - At the schema level to enable subscriptions for all types:
@@ -312,14 +316,15 @@ type Movie @node @subscription {
 === Removed `publish` method from `Neo4jGraphQLSubscriptionsEngine`
 
 The `publish` method has been removed from the `Neo4jGraphQLSubscriptionsEngine` interface as it is no longer used with Change Data Capture (CDC) based subscriptions. 
-
 Implementing this method on custom engines will no longer have an effect, and it is no longer possible to call `publish` directly on `Neo4jGraphQLSubscriptionsCDCEngine`.
 
+[[connect-operation-details]]
 === Connect operations now support multiple relationships between the same nodes
 
-The connect operations have been enhanced to support creating multiple relationships between the same pair of nodes. When performing a connect operation between two nodes, a new relationship will always be created, even if one or more relationships of the same type already exist between those nodes.
-
-This enables modeling scenarios where multiple distinct relationships of the same type are needed between the same nodes. For example, an actor playing multiple roles in the same movie.
+The connect operations have been enhanced to support creating multiple relationships between the same pair of nodes.
+When performing a connect operation between two nodes, a new relationship is always created, even if one or more relationships of the same type already exist between those nodes.
+This enables modeling scenarios where multiple distinct relationships of the same type are needed between the same nodes.
+For example, an actor playing multiple roles in the same movie.
 
 === Changed behavior for multiple relationships between nodes
 
