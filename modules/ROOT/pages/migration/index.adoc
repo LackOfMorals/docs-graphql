@@ -580,9 +580,6 @@ mutation {
 
 The `implicitSet` option of `excludeDeprecatedFields` has been removed.
 
-=== The Neo4j GraphQL Library and @neo4j/introspector now require Node.js 22 or greater
-
-Version 7.0.0 of the Neo4j GraphQL Library and the @neo4j/introspector now require Node.js version 22 or greater. 
 
 === `@coalesce` directive affects projection field values
 
