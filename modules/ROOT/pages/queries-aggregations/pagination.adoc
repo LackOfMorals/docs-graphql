@@ -1,0 +1,196 @@
+[[pagination]]
+= Pagination
+:page-aliases: pagination/index.adoc, pagination/offset-based.adoc, pagination/cursor-based.adoc, queries-aggregation/pagination/index.adoc, queries-aggregation/pagination/offset-based.adoc, queries-aggregation/pagination/cursor-based.adoc
+
+
+The Neo4j GraphQL Library offers two mechanisms for pagination:
+
+* Offset-based pagination - Pagination based on offsets, often associated with navigation via pages.
+* Cursor-based pagination - Pagination based on cursors, often associated with infinitely-scrolling applications.
+
+
+[[pagination-offset-based]]
+== Offset-based pagination
+
+Offset-based pagination, often associated with navigation via pages, can be achieved through the use of the `offset` and `limit` options available when querying for data.
+
+Using the following type definition:
+
+[source, graphql, indent=0]
+----
+type User {
+    name: String!
+}
+----
+
+Fetch the first page of 10 by executing:
+
+[source, graphql, indent=0]
+----
+query {
+    users(options: {
+        limit: 10
+    }) {
+        name
+    }
+}
+----
+
+And then on subsequent calls, introduce the `offset` argument and increment it by 10 on each call.
+
+Fetch the second page with:
+
+[source, graphql, indent=0]
+----
+query {
+    users(options: {
+        offset: 10
+        limit: 10
+    }) {
+        name
+    }
+}
+----
+
+Fetch the third page with:
+
+[source, graphql, indent=0]
+----
+query {
+    users(options: {
+        offset: 20
+        limit: 10
+    }) {
+        name
+    }
+}
+----
+
+And so on.
+
+
+=== Total number of pages
+
+You can fetch the total number of records for a certain type using its count query, and then divide that number by your entries per page in order to calculate the total number of pages.
+This determines what the last page is, and whether there is a next page.
+
+See xref::queries-aggregations/aggregations.adoc#_aggregate_related_nodes[count aggregation queries] for details on how to execute these queries.
+
+
+=== Paginating relationship fields
+
+Say that in addition to the `User` type above, there is also a `Post` type which a `User` has many of.
+You can also fetch a `User` and then paginate through their posts:
+
+[source, graphql, indent=0]
+----
+query {
+    users(where: {
+        name: "Billy"
+    }) {
+        name
+        posts(options: {
+            offset: 20
+            limit: 10
+        }) {
+            content
+        }
+    }
+}
+----
+
+
+[[pagination-cursor-based]]
+== Cursor-based pagination
+
+On relationship fields, you are able to take advantage of cursor-based pagination, which is often associated with infinitely-scrolling applications.
+
+Using the following type definition:
+
+[source, graphql, indent=0]
+----
+type User {
+    name: String!
+    posts: [Post!]! @relationship(type: "HAS_POST", direction: OUT)
+}
+
+type Post {
+    content: String!
+}
+----
+
+If you wanted to fetch the posts of user "John Smith" 10 at a time, you would first fetch 10:
+
+[source, graphql, indent=0]
+----
+query {
+    users(where: { name: "John Smith" }) {
+        name
+        postsConnection(first: 10) {
+            edges {
+                node {
+                    content
+                }
+            }
+            pageInfo {
+                endCursor
+                hasNextPage
+            }
+        }
+    }
+}
+----
+
+In the return value, if `hasNextPage` is `true`, you would pass `endCursor` into the next query of 10.
+You can do this with a variable, for example, `$after` in the following query:
+
+[source, graphql, indent=0]
+----
+query Users($after: String) {
+    users(where: { name: "John Smith" }) {
+        name
+        postsConnection(first: 10, after: $after) {
+            edges {
+                node {
+                    content
+                }
+            }
+            pageInfo {
+                endCursor
+                hasNextPage
+            }
+        }
+    }
+}
+----
+
+You may continue until `hasNextPage` is `false` in the return - this is when you have reached the end of the data.
+
+
+=== `totalCount`
+
+The Connection fields also offer a `totalCount` field which can be used to calculate page numbers.
+This is useful if you want to paginate by cursor but use page numbers in your application.
+
+Add the `totalCount` field which returns the total number of results matching the filter used, for example:
+
+[source, graphql, indent=0]
+----
+query Users($after: String) {
+    users(where: { name: "John Smith" }) {
+        name
+        postsConnection(first: 10) {
+            edges {
+                node {
+                    content
+                }
+            }
+            pageInfo {
+                endCursor
+                hasNextPage
+            }
+            totalCount
+        }
+    }
+}
+----

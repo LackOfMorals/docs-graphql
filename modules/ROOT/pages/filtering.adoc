@@ -1,11 +1,13 @@
 [[filtering]]
 = Filtering
-:page-aliases: filtering.adoc
+:page-aliases: queries-aggregations/filtering.adoc
 :description: This page describes filtering operators.
+
+You can apply filters when you query or aggregate data as well as use filtering rules for xref::/security/authorization.adoc#_filtering_rules[authorization].
 
 When querying for data, a number of operators are available for the types in the `where` argument of a query or mutation, allowing you to filter query results or specify the set of objects a mutation applies to.
 
-Operators can either be standalone operators (see xref:#_boolean_operators[]) or they are appended to field names (for example, xref:/queries-aggregations/filtering.adoc#_string_comparison[]).
+Operators can either be standalone operators (see xref:#_boolean_operators[]) or they are appended to field names (for example, xref:#_string_comparison[]).
 
 All operators can be combined using the Boolean operators `AND`, `OR`, and `NOT`.
 
@@ -42,7 +44,7 @@ query {
 }
 ----
 
-`name_CONTAINS` and `name_ENDS_WITH` are xref:/queries-aggregations/filtering.adoc#_string_comparison[String comparisons] while `movies_SOME` is a xref:/queries-aggregations/filtering.adoc#_relationship_filtering[relationship filter]. 
+`name_CONTAINS` and `name_ENDS_WITH` are xref:#_string_comparison[String comparisons] while `movies_SOME` is a xref:#_relationship_filtering[relationship filter]. 
 
 === Equality operators
 
@@ -60,7 +62,7 @@ query {
   }
 ----
 
-For non-equality, you must use the xref:/queries-aggregations/filtering.adoc#_boolean_operators[`NOT`] logical operator.
+For non-equality, you must use the xref:#_boolean_operators[`NOT`] logical operator.
 
 .Filtering all users which are not named John
 [source, graphql, indent=0]
@@ -101,11 +103,11 @@ query {
 ----
 
 Spatial types use numerical filtering differently and they also have additional options. 
-See xref:filtering.adoc#_filtering_spatial_types[Filtering spatial types] for more information.
+See xref:filtering.adoc#_spatial_type_filtering[] for more information.
 
 ==== Spatial type filtering
 
-Both the `Point` and the `CartesianPoint` types use xref::queries-aggregations/filtering.adoc#_numerical_operators[numerical operators] and have an additional `_DISTANCE` filter.
+Both the `Point` and the `CartesianPoint` types use xref:#_numerical_operators[numerical operators] and have an additional `_DISTANCE` filter.
 Here is a list of what each filter does for the two types:
 
 * `_LT`: checks if a point is less than the distance in the `distance` field away (in meters) from the point specified by the `point` field.
