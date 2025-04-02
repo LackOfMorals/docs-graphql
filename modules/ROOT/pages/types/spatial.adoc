@@ -18,7 +18,7 @@ In order to use it in your schema, add a field with a type `Point` to any other 
 
 [source, graphql, indent=0]
 ----
-type TypeWithPoint @node {
+ type TypeWithPoint @node {
     location: Point!
 }
 ----
@@ -31,17 +31,19 @@ See xref::filtering.adoc#_filtering_spatial_types[Filtering spatial types] for f
 
 [source, graphql, indent=0]
 ----
-type Point @node {
-    latitude: Float!
-    longitude: Float!
-    height: Float
+type Point {
+  longitude: Float!
+  latitude: Float!
+  height: Float
+  crs: String!
+  srid: Int!
 }
 ----
 
 ==== Queries and mutations
 
 Due to the fact that `Point` is an object type, it has an additional type for input in queries and mutations. 
-However, this input type has the same shape as the object type:
+However, this input types  the same shape as the object type:
 
 [source, graphql, indent=0]
 ----
@@ -50,6 +52,21 @@ input PointInput {
     longitude: Float!
     height: Float
 }
+
+input PointFilters {
+  eq: PointInput
+  in: [PointInput!]
+  distance: PointDistanceFilters
+}
+
+input PointDistanceFilters {
+  from: PointInput!
+  gt: Float
+  gte: Float
+  lt: Float
+  lte: Float
+  eq: Float
+}
 ----
 
 For example, you can query for a `User` with an exact location:
@@ -57,7 +74,7 @@ For example, you can query for a `User` with an exact location:
 [source, graphql, indent=0]
 ----
 query Users($longitude: Float!, $latitude: Float!) {
-    users(where: { location_EQ: { longitude: $longitude, latitude: $latitude } }) {
+    users(where: { location: { eq: { longitude: $longitude, latitude: $latitude } } }) {
         name
         location {
             longitude
@@ -106,10 +123,12 @@ See xref::filtering.adoc#_filtering_spatial_types[Filtering spatial types] for f
 
 [source, graphql, indent=0]
 ----
-type CartesianPoint @node {
-    x: Float!
-    y: Float!
-    z: Float
+type CartesianPoint {
+  x: Float!
+  y: Float!
+  z: Float
+  crs: String!
+  srid: Int!
 }
 ----
 
@@ -121,8 +140,57 @@ However, this input type has the same shape as the object type:
 [source, graphql, indent=0]
 ----
 input CartesianPointInput {
-    x: Float!
-    y: Float!
-    z: Float
+  x: Float!
+  y: Float!
+  z: Float
+}
+
+input CartesianPointFilters {
+  eq: CartesianPointInput
+  in: [CartesianPointInput!]
+  distance: CartesianDistancePointFilters
+}
+
+input CartesianDistancePointFilters {
+  from: CartesianPointInput!
+  gt: Float
+  gte: Float
+  lt: Float
+  lte: Float
+}
+----
+
+
+For example, you can query for a `User` with an exact location:
+
+[source, graphql, indent=0]
+----
+query Users($x: Float!, $y: Float!, $z: Float!) {
+    users(where: { location: { eq: { x: $x, y: $y, z: $z } } }) {
+        name
+        location {
+            x
+            y
+            z
+        }
+    }
+}
+----
+
+Or you can create a `User` with a location as follows:
+
+[source, graphql, indent=0]
+----
+mutation CreateUsers($name: String!, $x: Float!, $y: Float!, $z: Float!) {
+    createUsers(input: [{ name: $name, location: { x: $x, y: $y, z: $z } }]) {
+        users {
+            name
+            location {
+                x
+                y
+                z
+            }
+        }
+    }
 }
 ----

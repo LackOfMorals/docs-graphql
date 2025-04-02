@@ -20,7 +20,6 @@ From these type definitions, the library generates the following operation field
 **Query**:
 
     * `movies`
-    * `moviesAggregate`
     * `moviesConnection`
 
 **Mutation**:
@@ -34,7 +33,12 @@ From these type definitions, the library generates the following operation field
     * `movieCreated`
     * `movieUpdated`
     * `movieDeleted`
-.
+
+**moviesConnection**:
+    * `aggregate`
+    * `edges`
+    * `totalCount`
+    * `pageInfo`
 
 This page describes how to reduce the operation fields produced using the directives `@query`, `@mutation`, and `@subscription`.
 
@@ -51,7 +55,7 @@ directive @query(read: Boolean! = true, aggregate: Boolean! = false) on OBJECT |
 
 === Usage
 
-.Disable _movies_ and _moviesConnection_ operations
+.Disable Query _movies_ and _moviesConnection_ edges field
 [source, graphql, indent=0]
 ----
 type Movie @node @query(read: false, aggregate: true) { 
@@ -60,7 +64,7 @@ type Movie @node @query(read: false, aggregate: true) {
 }
 ----
 
-.Disable _moviesAggregate_ operations
+.Disable _moviesConnection_ aggregate field
 [source, graphql, indent=0]
 ----
 type Movie @node @query(read: true, aggregate: false)  { 

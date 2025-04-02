@@ -28,7 +28,6 @@ type Actor {
   name: String!
   age: Int
   actedIn(where: MovieWhere, sort: [MovieSort!]!, limit: Int, offset: Int, directed: Boolean = true): [Movie!]!
-  actedInAggregate(where: MovieWhere, directed: Boolean = true): ActorMovieActedInAggregationSelection
   actedInConnection(where: ActorActedInConnectionWhere, first: Int, after: String, directed: Boolean = true, sort: [ActorActedInConnectionSort!]): ActorActedInConnection!
 }
 ----
@@ -57,14 +56,13 @@ Now the type `Actor` looks like this:
 type Actor {
   name: String!
   actedIn(where: MovieWhere, sort: [MovieSort!]!, limit: Int, offset: Int, directed: Boolean = true): [Movie!]!
-  actedInAggregate(where: MovieWhere, directed: Boolean = true): ActorMovieActedInAggregationSelection
   actedInConnection(where: ActorActedInConnectionWhere, first: Int, after: String, directed: Boolean = true, sort: [ActorActedInConnectionSort!]): ActorActedInConnection!
 }
 ----
 
 == `@relationship`
 
-There are several nested operations available for every field created using the `@relationship` directive. These are `create`, `connect`, `disconnect`, `connectOrCreate`, and `delete`. 
+There are several nested operations available for every field created using the `@relationship` directive. These are `create`, `connect`, `disconnect`, and `delete`. 
 
 However, these operations are not always needed. 
 The `@relationship` directive allows you to define which operations should be available for a relationship by using the argument `nestedOperations`.
@@ -82,7 +80,6 @@ enum NestedOperations {
     DELETE
     CONNECT
     DISCONNECT
-    CONNECT_OR_CREATE
 }
 
 directive @relationship(
@@ -90,7 +87,7 @@ directive @relationship(
     queryDirection: RelationshipQueryDirection! = DEFAULT_DIRECTED
     direction: RelationshipDirection!
     properties: String
-    nestedOperations: [NestedOperations!]! = [CREATE, UPDATE, DELETE, CONNECT, DISCONNECT, CONNECT_OR_CREATE]
+    nestedOperations: [NestedOperations!]! = [CREATE, UPDATE, DELETE, CONNECT, DISCONNECT]
     aggregate: Boolean! = true
 ) on FIELD_DEFINITION
 ----
@@ -99,19 +96,25 @@ directive @relationship(
 
 *Configure aggregation*
 
-From the previous type definitions, the type `Actor` produced is:
+From the previous type definitions, the type related to `Actor` produced are:
 
 [source, graphql, indent=0]
 ----
 type Actor {
   name: String!
   actedIn(where: MovieWhere, sort: [MovieSort!]!, limit: Int, offset: Int, directed: Boolean = true): [Movie!]!
-  actedInAggregate(where: MovieWhere, directed: Boolean = true): ActorMovieActedInAggregationSelection
   actedInConnection(where: ActorActedInConnectionWhere, first: Int, after: String, directed: Boolean = true, sort: [ActorActedInConnectionSort!]): ActorActedInConnection!
+}
+
+type ActorActedInConnection {
+  edges: [ActorActedInRelationship!]!
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: ActorMovieActedInAggregateSelection!
 }
 ----
 
-Note that the relationship field `actedIn` produces the operation field `actedInAggregate`, which allows aggregations on that relationship. 
+Note that the relationship field `actedIn` produces the operation field `aggregate` in the type `ActorActedInConnection`, which allows aggregations on that relationship. 
 It is possible to configure this behavior by passing the argument aggregate on the `@relationship` directive:
 
 [source, graphql, indent=0]
@@ -128,15 +131,14 @@ type Actor @node {
 }
 ----
 
-In this case, as the argument `aggregate` was passed as false, the type `Actor` produced is:
+In this case, as the argument `aggregate` was passed as false, the type `ActorActedInConnection` produced is:
 
 [source, graphql, indent=0]
 ----
-type Actor {
-  name: String!
-  age: Int
-  actedIn(where: MovieWhere, sort: [MovieSort!]!, limit: Int, offset: Int, directed: Boolean = true): [Movie!]!
-  actedInConnection(where: ActorActedInConnectionWhere, first: Int, after: String, directed: Boolean = true, sort: [ActorActedInConnectionSort!]): ActorActedInConnection!
+type ActorActedInConnection {
+  edges: [ActorActedInRelationship!]!
+  totalCount: Int!
+  pageInfo: PageInfo!
 }
 ----
 
@@ -155,7 +157,6 @@ enum NestedOperations {
     DELETE
     CONNECT
     DISCONNECT
-    CONNECT_OR_CREATE
 }
 ----
 
@@ -176,7 +177,7 @@ type Movie @node {
 type Actor @node {
     name: String!
     age: Int
-    actedIn: [Movie!]! @relationship(type: "ACTED_IN", direction: OUT, nestedOperations: [UPDATE, DELETE, CONNECT, DISCONNECT, CONNECT_OR_CREATE])
+    actedIn: [Movie!]! @relationship(type: "ACTED_IN", direction: OUT, nestedOperations: [UPDATE, DELETE, CONNECT, DISCONNECT])
 }
 ----
 
@@ -242,14 +243,13 @@ Aggregations, however, are available on both:
 
 [source, graphql, indent=0]
 ----
-type MovieAggregateSelection {
-    count: Int!
-    description: StringAggregateSelectionNullable!
-    title: StringAggregateSelectionNonNullable!
+type MovieAggregateNode {
+  title: StringAggregateSelection!
+  description: StringAggregateSelection!
 }
 ----
 
-In case you want to remove the `description` field from `MovieAggregateSelection`, you need to change the `onAggregate` value to `false`:
+In case you want to remove the `description` field from `MovieAggregateNode`, you need to change the `onAggregate` value to `false`:
 
 [source, graphql, indent=0]
 ----
@@ -270,7 +270,6 @@ From the previous type definitions, the type `Actor` produced is:
 type Actor {
   name: String!
   actedIn(where: MovieWhere, sort: [MovieSort!]!, limit: Int, offset: Int, directed: Boolean = true): [Movie!]!
-  actedInAggregate(where: MovieWhere, directed: Boolean = true): ActorMovieActedInAggregationSelection
   actedInConnection(where: ActorActedInConnectionWhere, first: Int, after: String, directed: Boolean = true, sort: [ActorActedInConnectionSort!]): ActorActedInConnection!
 }
 ----
@@ -300,12 +299,17 @@ Generate the type `Actor`:
 ----
 type Actor {
   name: String!
-  actedInAggregate(where: MovieWhere, directed: Boolean = true): ActorMovieActedInAggregationSelection
+  actedInConnection(where: ActorActedInConnectionWhere, first: Int, after: String, directed: Boolean = true, sort: [ActorActedInConnectionSort!]): ActorActedInConnection!
+}
+
+type ActorActedInConnection {
+  aggregate: ActorMovieActedInAggregateSelection!
 }
 ----
 
-Note how `actedInAggregate` is not affected by the argument `onAggregate`. 
-To disable the generation of `actedInAggregate`, see the `aggregate` argument of the directive xref::/schema-configuration/field-configuration.adoc#_relationship[`@relationship`].
+Note how the `actedInConnection` field is generated but `aggregate` is still present on the `ActorActedInConnection` type, and not affected by the argument `onAggregate`. 
+
+To disable the generation of the `aggregate` field on , see the `aggregate` argument of the directive xref::/schema-configuration/field-configuration.adoc#_relationship[`@relationship`].
 
 == `@settable`
 
@@ -351,7 +355,7 @@ input MovieCreateInput {
 }
 
 input MovieUpdateInput {
-    title: String
+  title: StringScalarMutations
 }
 ----
 
@@ -387,12 +391,12 @@ input ActorCreateInput {
 }
 
 input ActorUpdateInput {
-  name: String
+  name: StringScalarMutations
   actedIn: [ActorActedInUpdateFieldInput!]
 }
 ----
 
-This means `actedIn` can be updated on an update, but it is no longer available on `create`` operations.
+This means `actedIn` can be updated on an update, but it is no longer available on `create` operations.
 
 == `@filterable`
 
@@ -437,41 +441,17 @@ input MovieWhere {
   OR: [MovieWhere!]
   AND: [MovieWhere!]
   NOT: MovieWhere
-  title_EQ: String
-  title_IN: [String!]
-  title_CONTAINS: String
-  title_STARTS_WITH: String
-  title_ENDS_WITH: String
-  actorsAggregate: MovieActorsAggregateInput
-  actors_ALL: ActorWhere
-  actors_NONE: ActorWhere
-  actors_SINGLE: ActorWhere
-  actors_SOME: ActorWhere
-  actorsConnection_ALL: MovieActorsConnectionWhere
-  actorsConnection_NONE: MovieActorsConnectionWhere
-  actorsConnection_SINGLE: MovieActorsConnectionWhere
-  actorsConnection_SOME: MovieActorsConnectionWhere
+  title: StringScalarFilters
+  actors: ActorRelationshipFilters
+  actorsConnection: MovieActorsConnectionFilters
 }
+
 
 input ActorActedInNodeAggregationWhereInput {
   AND: [ActorActedInNodeAggregationWhereInput!]
   OR: [ActorActedInNodeAggregationWhereInput!]
   NOT: ActorActedInNodeAggregationWhereInput
-  title_AVERAGE_LENGTH_EQUAL: Float
-  title_LONGEST_LENGTH_EQUAL: Int
-  title_SHORTEST_LENGTH_EQUAL: Int
-  title_AVERAGE_LENGTH_GT: Float
-  title_LONGEST_LENGTH_GT: Int
-  title_SHORTEST_LENGTH_GT: Int
-  title_AVERAGE_LENGTH_GTE: Float
-  title_LONGEST_LENGTH_GTE: Int
-  title_SHORTEST_LENGTH_GTE: Int
-  title_AVERAGE_LENGTH_LT: Float
-  title_LONGEST_LENGTH_LT: Int
-  title_SHORTEST_LENGTH_LT: Int
-  title_AVERAGE_LENGTH_LTE: Float
-  title_LONGEST_LENGTH_LTE: Int
-  title_SHORTEST_LENGTH_LTE: Int
+  title: StringScalarAggregationFilters
 }
 ----
 
@@ -507,33 +487,16 @@ input MovieWhere {
   OR: [MovieWhere!]
   AND: [MovieWhere!]
   NOT: MovieWhere
-  title_EQ: String
-  title_IN: [String!]
-  title_CONTAINS: String
-  title_STARTS_WITH: String
-  title_ENDS_WITH: String
+  title: StringScalarFilters
 }
 
 input ActorActedInNodeAggregationWhereInput {
   AND: [ActorActedInNodeAggregationWhereInput!]
   OR: [ActorActedInNodeAggregationWhereInput!]
   NOT: ActorActedInNodeAggregationWhereInput
-  title_AVERAGE_LENGTH_EQUAL: Float
-  title_LONGEST_LENGTH_EQUAL: Int
-  title_SHORTEST_LENGTH_EQUAL: Int
-  title_AVERAGE_LENGTH_GT: Float
-  title_LONGEST_LENGTH_GT: Int
-  title_SHORTEST_LENGTH_GT: Int
-  title_AVERAGE_LENGTH_GTE: Float
-  title_LONGEST_LENGTH_GTE: Int
-  title_SHORTEST_LENGTH_GTE: Int
-  title_AVERAGE_LENGTH_LT: Float
-  title_LONGEST_LENGTH_LT: Int
-  title_SHORTEST_LENGTH_LT: Int
-  title_AVERAGE_LENGTH_LTE: Float
-  title_LONGEST_LENGTH_LTE: Int
-  title_SHORTEST_LENGTH_LTE: Int
+  title: StringScalarAggregationFilters
 }
+
 ----
 
 As shown by the previous inputs fields, the `actors` field is not available for filtering on both value and aggregation filters.

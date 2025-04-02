@@ -23,15 +23,29 @@ type Actor @node {
 extend schema @query(read: true, aggregate: false)
 ----
 
-**Query**
+This configuration disables all top-level aggregation operations for the `Movie` and `Actor` types, while still allowing read operations.
 
-    * `movies`
-    * [.line-through]#`moviesAggregate`#
-    * `moviesConnection`
-    * `actors`
-    * [.line-through]#`actorsAggregate`#
-    * `actorsConnection`
+[source, graphql, indent=0]
+----
+type Query {
+  moviesConnection(first: Int, after: String, where: MovieWhere, sort: [MovieSort!]): MoviesConnection!
+  movies(where: MovieWhere, limit: Int, offset: Int, sort: [MovieSort!]): [Movie!]!
+  actorsConnection(first: Int, after: String, where: ActorWhere, sort: [ActorSort!]): ActorsConnection!
+  actors(where: ActorWhere, limit: Int, offset: Int, sort: [ActorSort!]): [Actor!]!
+}
 
+type MoviesConnection {
+  edges: [MovieEdge!]!
+  totalCount: Int!
+  pageInfo: PageInfo!
+}
+
+type ActorsConnection {
+  edges: [ActorEdge!]!
+  totalCount: Int!
+  pageInfo: PageInfo!
+}
+----
 
 **Invalid schema usage**
 
