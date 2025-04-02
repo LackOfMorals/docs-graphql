@@ -11,7 +11,7 @@ Queries on this page assume the following type definitions:
 type Post @node {
     id: ID! @id
     content: String!
-    creator: User! @relationship(type: "HAS_POST", direction: IN, properties: "PostedAt")
+    creators: [User!]! @relationship(type: "HAS_POST", direction: IN, properties: "PostedAt")
     createdAt: DateTime!
 }
 
@@ -35,7 +35,6 @@ For which the following query fields are generated:
 type Query {
     posts(where: PostWhere, sort: [PostSort!]!, limit: Int, offset: Int,): [Post!]!
     postsConnection(after: String, first: Int, sort: [PostSort], where: PostWhere): PostsConnection!
-
     users(where: UserWhere, sort: [UserSort!]!, limit: Int, offset: Int,): [User!]!
     usersConnection(after: String, first: Int, sort: [UserSort], where: UserWhere): UsersConnection!
 }
@@ -123,7 +122,7 @@ query {
 [source, graphql, indent=0]
 ----
 query {
-    usersConnection(where: { name_STARTS_WITH: "J" }) {
+    usersConnection(where: { name: { startsWith: "J" } }) {
         aggregate {
             count {
                 nodes
@@ -172,7 +171,7 @@ query {
             aggregate {
                 node {
                     content {
-                    longest
+                        longest
                     }
                 }
             }

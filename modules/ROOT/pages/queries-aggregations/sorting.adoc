@@ -13,10 +13,16 @@ Using this example type definition:
 type Movie @node {
     title: String!
     runtime: Int!
+    actors: [Actor!]! @relationship(type: "ACTED_IN", direction: IN)
+}
+
+type Actor @node {
+    surname: String!
+    movies: [Movie!]! @relationship(type: "ACTED_IN", direction: OUT)
 }
 ----
 
-The following sorting input type and query are generated:
+The following sorting input type and query are generated for the type `Movie`:
 
 [source, graphql, indent=0]
 ----
@@ -36,7 +42,7 @@ input MovieSort {
 }
 
 type Query {
-    movies(where: MovieWhere, sort: [MovieSort!], limit: Int, offset: Int): [Movie!]!
+  movies(where: MovieWhere, limit: Int, offset: Int, sort: [MovieSort!]): [Movie!]!
 }
 ----
 
@@ -45,15 +51,10 @@ The following query fetches all movies sorted by runtime in ascending order:
 [source, graphql, indent=0]
 ----
 query {
-    movies(sort: [
-            {
-                runtime: ASC
-            }
-        ]
-    ) {
-        title
-        runtime
-    }
+  movies(sort: [{ runtime: ASC }]) {
+    title
+    runtime
+  }
 }
 ----
 
@@ -62,19 +63,15 @@ If there is a relationship between the `Movie` and an `Actor` type, you can also
 [source, graphql, indent=0]
 ----
 query {
-    movies {
-        title
-        runtime
-        actors(sort: [
-                {
-                    surname: ASC
-                }
-            ]
-        ) {
-            surname
-        }
+  movies {
+    title
+    runtime
+    actors(sort: [{ surname: ASC }]) {
+      surname
     }
+  }
 }
+
 ----
 
 [CAUTION]

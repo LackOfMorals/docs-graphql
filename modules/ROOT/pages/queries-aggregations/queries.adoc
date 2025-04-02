@@ -4,14 +4,14 @@
 
 == Type definitions
 
-Quries on this page assume the following type definitions:
+Queries on this page assume the following type definitions:
 
 [source, graphql, indent=0]
 ----
 type Post @node {
     id: ID! @id
     content: String!
-    creator: User! @relationship(type: "HAS_POST", direction: IN, properties: "PostedAt")
+    creators: [User!]! @relationship(type: "HAS_POST", direction: IN, properties: "PostedAt")
     createdAt: DateTime!
 }
 
@@ -33,11 +33,10 @@ For which the following query fields are generated:
 [source, graphql, indent=0]
 ----
 type Query {
-    posts(where: PostWhere, sort: [PostSort!]!, limit: Int, offset: Int,): [Post!]!
-    postsAggregate(where: PostWhere): PostAggregationSelection!
-
-    users(where: UserWhere, sort: [UserSort!]!, limit: Int, offset: Int,): [User!]!
-    usersAggregate(where: UserWhere): UserAggregationSelection!
+  postsConnection(first: Int, after: String, where: PostWhere, sort: [PostSort!]): PostsConnection!
+  posts(where: PostWhere, limit: Int, offset: Int, sort: [PostSort!]): [Post!]!
+  usersConnection(first: Int, after: String, where: UserWhere, sort: [UserSort!]): UsersConnection!
+  users(where: UserWhere, limit: Int, offset: Int, sort: [UserSort!]): [User!]!
 }
 ----
 
@@ -60,12 +59,12 @@ query {
 [source, graphql, indent=0]
 ----
 query {
-    users(where: { name_EQ: "Jane Smith" }) {
-        id
-        name
-        posts {
-            content
-        }
+  users(where: { name: { eq: "Jane Smith" } }) {
+    id
+    name
+    posts {
+      content
     }
+  }
 }
 ----
