@@ -10,6 +10,7 @@ This section addresses the following topics:
 
 * xref:queries-aggregations/queries.adoc[Queries] - Read or fetch values.
 * xref:queries-aggregations/aggregations.adoc[Aggregations] - Combine lists of types from different sources into a single list.
-* xref:queries-aggregations/filtering.adoc[Filtering] - Filter query results to find objects.
 * xref:queries-aggregations/sorting.adoc[Sorting] - Sort query results by individual fields.
-* xref:queries-aggregations/pagination/index.adoc[Pagination] - Navigate result pages.
+* xref:queries-aggregations/pagination.adoc[Pagination] - Navigate result pages.
+
+Also, refer to xref:filtering.adoc[Filtering] for details on how to filter query results to find objects.

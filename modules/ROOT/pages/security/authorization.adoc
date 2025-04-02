@@ -21,6 +21,9 @@ Instead, use xref::/security/subscriptions-authorization.adoc[`@subscriptionsAut
 Filtering rules filter out data which users do not have access to, without throwing any errors. 
 These rules are translated into filtering predicates, which are evaluated against matched data in the database.
 
+Filters for such rules work just like filters for queries and aggregations.
+Refer to xref:filtering.adoc[].
+
 Filtering rules protect data as well as obfuscate the information on the _existence_ of that data to unauthorized users.
 
 For instance, here is how to filter out `Post` nodes which don't belong to the current `User`:
