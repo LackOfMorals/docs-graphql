@@ -258,7 +258,7 @@ For example, the following would allow for the update of a `User` node if the JW
 [source, graphql, indent=0]
 ----
 type User @node @authorization(validate: [
-    { operations: [UPDATE], where: { jwt: { roles_INCLUDES: "admin" } } }
+    { operations: [UPDATE], where: { jwt: { roles: { includes: "admin" } } } }
     { operations: [UPDATE], where: { node: { locked: false } } }
 ]) {
     id: ID!
@@ -271,7 +271,7 @@ If you want to combine the rule that a user must be an admin with the rule that 
 [source, graphql, indent=0]
 ----
 type User @node @authorization(validate: [
-    { operations: [UPDATE], where: { AND: [{ jwt: { roles_INCLUDES: "admin" } }, { node: { locked: false } }] } }
+    { operations: [UPDATE], where: { AND: [{ jwt: { roles: { includes: "admin" } } }, { node: { locked: false } }] } }
 ]) {
     id: ID!
     locked: Boolean!
