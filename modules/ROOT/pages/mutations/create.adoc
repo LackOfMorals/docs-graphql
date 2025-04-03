@@ -110,53 +110,6 @@ You can perform similar and complementary actions by using the `update` mutation
 Read about xref:mutations/update.adoc#_connectorcreate_relationships[`update`] for more information.
 ====
 
-== `connectOrCreate` relationships
-
-If a related node has the `@unique` directive defined, you can use `connectOrCreate` nested in a `create` mutation to perform an operation similar to a link:https://neo4j.com/docs/cypher-manual/current/clauses/merge/[Cypher `MERGE`] operation on the related node.
-This will create a new relationship and the related node if it doesn't exist yet.
-
-Consider the following type definitions:
-
-[source, graphql, indent=0]
-----
-type Actor @node {
-    name: String!
-    movies: [Movie!]! @relationship(type: "ACTED_IN", direction: OUT)
-}
-
-type Movie @node {
-    title: String
-    id: ID! @id @unique
-    actors: [Actor!]! @relationship(type: "ACTED_IN", direction: IN)
-}
-----
-
-Since a movie ID is unique, you can use `connectOrCreate` in an `Actor` mutation to ensure the movie exists in the database before connecting them.
-Note that only `@unique` or `@id` fields can be used in `where`:
-
-[source, graphql, indent=0]
-----
-mutation {
-  createActors(input: {
-    name: "Tom Hanks",
-    movies: {
-      connectOrCreate: {
-        where: { node: { id_EQ: "1234" } }
-        onCreate: { node: { title: "Forrest Gump" } }
-      }
-    }
-  }) {
-    info {
-      nodesCreated
-    }
-  }
-}
-----
-
-This ensures that a movie with ID 1234 exists and is connected to `"Tom Hanks"`.
-If the movie does not exist, it will be created with the title `"Forrest Gump"`.
-If a movie with the given ID already exists, it will also be connected to `"Tom Hanks"`, and keep whatever title it has.
-
 == `create` optimization
 
 With `create` operations, there is no limit on how many nodes can be created at once.

@@ -37,12 +37,11 @@ export type Neo4jFeaturesSettings = {
      * NOTE: this will not remove user defined deprecated fields
      **/
     excludeDeprecatedFields?: {
-        bookmark?: boolean;
-        negationFilters?: boolean;
-        arrayFilters?: boolean;
-        stringAggregation?: boolean;
+        mutationOperations?: boolean;
         aggregationFilters?: boolean;
-        nestedUpdateOperationsFields?: boolean;
+        aggregationFiltersOutsideConnection?: boolean;
+        relationshipFilters?: boolean;
+        attributeFilters?: boolean;
     };
     vector?: Neo4jVectorSettings;
 };
