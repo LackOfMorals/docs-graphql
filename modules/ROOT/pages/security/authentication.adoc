@@ -74,11 +74,11 @@ type User @authentication @node {
 
 With this configuration, authentication is validated when any of the following operations are _attempted_:
 
-* *Create*: `createUsers` mutation, `create`, or `connectOrCreate` nested operation via a related type.
+* *Create*: `createUsers` mutation, `create` nested operation via a related type.
 * *Read*: `users`, `usersConnection`, `aggregate` query, or access via related type.
 * *Update*: `updateUsers` mutation or `update` nested operation via a related type.
 * *Delete*: `deleteUsers` mutation or `delete` nested operation via a related type.
-* *Create relationship*: `connect` or `connectOrCreate` nested operation via a related type.
+* *Create relationship*: `connect` nested operation via a related type.
 * *Delete relationship*: `disconnect` nested operation via a related type.
 * *Subscribe*: all subscription operations related to type `User`.
 
