@@ -96,7 +96,7 @@ Here is an example of how to use them:
 [source, graphql, indent=0]
 ----
 query {
-  users(where: {age: { lt: 50 } }) {
+  users(where: { age: { lt: 50 } }) {
     id
     name
     age
@@ -107,14 +107,32 @@ query {
 Spatial types use numerical filtering differently and they also have additional options. 
 See xref:filtering.adoc#_spatial_type_filtering[] for more information.
 
-==== Spatial type filtering
+=== Spatial type filtering
 
-Spatial filtering for Point and CartesianPoint types now uses an enhanced filter format.
-The filter accepts a "distance" object with the following keys:
-- lt / lte / gt / gte: compares the spatial distance against the provided numeric value.
-- from: specifies the reference coordinates (such as longitude, latitude, and optionally height).
+Spatial filters are available for both Point and Cartesian fields.
+They allow you to filter spatial data either by exact equality or based on a distance criterion.
 
-For example, to find all users within a 5km (5000m) radius of a certain point, you can use:
+For exact matching, use the eq operator:
+[source, graphql, indent=0]
+----
+query {
+  users(
+    where: {
+      location: {
+        eq: { longitude: 9, latitude: 10, height: 11 }
+      }
+    }
+  ) {
+    name
+    location {
+      longitude
+      latitude
+    }
+  }
+}
+----
+
+For distance-based filtering, combine xref:#_numerical_operators[numerical operators] operators with the distance operator:
 [source, graphql, indent=0]
 ----
 query CloseByUsers {
@@ -134,9 +152,7 @@ query CloseByUsers {
 }
 ----
 
-
-The same query for a `CartesianPoint`:
-
+For Cartesian points, use:
 [source, graphql, indent=0]
 ----
 query CloseByUsers {
