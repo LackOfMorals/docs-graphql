@@ -112,7 +112,8 @@ type Movie @node @mutation(operations: [CREATE]) {
 
 == `@subscription`
 
-This directive is used to limit subscription operations in the library.
+This directive is used to enable subscription operations in the library. 
+Subscriptions are opt-in by default, meaning that they are disabled unless explicitly enabled.
 
 === Definition
 
@@ -129,15 +130,6 @@ directive @subscription(events: [SubscriptionFields!]! = [CREATED, UPDATED, DELE
 
 === Usage
 
-.Disable subscriptions for _Movie_
-[source, graphql, indent=0]
-----
-type Movie @node @subscription(events: [])  { 
-    title: String 
-    length: Int
-}
-----
-
 .Enable only _movieCreated_ subscription for _Movie_
 [source, graphql, indent=0]
 ----
@@ -145,6 +137,22 @@ type Movie @node @subscription(events: [CREATED]) {
     title: String 
     length: Int
 }
+----
+
+.Enable subscriptions for all types but disable subscriptions for _Movie_
+[source, graphql, indent=0]
+----
+type Movie @node @subscription(events: [])  { 
+    title: String 
+    length: Int
+}
+
+type Actor @node  { 
+    name: String 
+    movies: [Movie!]! @relationship(type: "ACTED_IN", direction: OUT) 
+}
+
+extend schema @subscription
 ----
 
 [[type-definitions-default-values-default]]
