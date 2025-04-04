@@ -61,6 +61,8 @@
 ** xref:aura-graphql/deploy-and-operate.adoc[]
 ** xref:aura-graphql/authentication-providers.adoc[]
 ** xref:aura-graphql/using-your-api.adoc[]
+** xref:aura-graphql/ending-with-the-beta.adoc[]
+
 
 * xref:introspector.adoc[Introspector]
 
