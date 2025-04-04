@@ -43,7 +43,7 @@ type Point {
 ==== Queries and mutations
 
 Due to the fact that `Point` is an object type, it has an additional type for input in queries and mutations. 
-However, this input types  the same shape as the object type:
+However, these input types have the same shape as the object type:
 
 [source, graphql, indent=0]
 ----

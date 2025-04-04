@@ -96,7 +96,7 @@ directive @relationship(
 
 *Configure aggregation*
 
-From the previous type definitions, the type related to `Actor` produced are:
+From the previous type definitions, the types related to `Actor` produced are:
 
 [source, graphql, indent=0]
 ----
@@ -307,9 +307,9 @@ type ActorActedInConnection {
 }
 ----
 
-Note how the `actedInConnection` field is generated but `aggregate` is still present on the `ActorActedInConnection` type, and not affected by the argument `onAggregate`. 
+Note how the `aggregate` field is still present on the `ActorActedInConnection` type, and not affected by the argument `onAggregate`. 
 
-To disable the generation of the `aggregate` field on , see the `aggregate` argument of the directive xref::/schema-configuration/field-configuration.adoc#_relationship[`@relationship`].
+To disable the generation of the `aggregate` field, see the `aggregate` argument of the xref::/schema-configuration/field-configuration.adoc#_relationship[`@relationship` directive].
 
 == `@settable`
 
