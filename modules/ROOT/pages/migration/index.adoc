@@ -328,11 +328,10 @@ For example, an actor playing multiple roles in the same movie.
 
 === Changed behavior for multiple relationships between nodes
 
-The way multiple relationships between the same two nodes are handled has changed:
+The way multiple relationships are handled between the same two nodes has changed:
 
-* In entity query fields (like `movies`), duplicate nodes will be removed and only distinct results will be returned, regardless of how many relationships exist between the nodes.
-
-* In connection query fields (like `moviesConnection`), all relationships will be represented individually. This allows for projecting relationship properties for each connection between the two nodes.
+* In entity query fields (like `movies`), duplicate nodes are removed and only distinct results are returned, regardless of how many relationships exist between the nodes.
+* In connection query fields (like `moviesConnection`), all relationships are represented individually. This allows for projecting relationship properties for each connection between the two nodes.
 
 For example, consider a scenario where Eddie Murphy played multiple roles in the same movie:
 
@@ -979,7 +978,8 @@ const neoSchema = new Neo4jGraphQL({
 
 === Deprecated aggregation filters outside connection fields
 
-The aggregation filters outside connection fields are now deprecated. You should use the aggregation filters within connection input fields instead:
+The aggregation filters outside connection fields are now deprecated.
+Use the aggregation filters within connection input fields instead:
 
 [cols="1,1"]
 |===
@@ -1017,9 +1017,10 @@ const neoSchema = new Neo4jGraphQL({
 });
 ----
 
-=== Deprecated Aggregation filters outside dedicated input
+=== Deprecated aggregation filters outside dedicated input
 
-Aggregation filters outside dedicated input like `_AVERAGE_GT` are now deprecated. You should use the dedicated input object versions:
+Aggregation filters outside dedicated input like `_AVERAGE_GT` are now deprecated.
+Use the dedicated input object versions instead:
 
 [cols="1,1"]
 |===
