@@ -500,7 +500,7 @@ The following form has now been completely removed:
 }
 ----
 
-The root-level query has been changed to use the Relay Cursor Connections Specification:
+The root-level query has been changed to use the https://relay.dev/graphql/connections.htm[Relay Cursor Connections Specification]:
 
 [cols="1,1"]
 |===
@@ -538,7 +538,7 @@ query {
 ----
 |===
 
-The new form uses the Relay Cursor Connections Specification, which allows for pagination using cursors and access to the `pageInfo` field.
+The new form uses the  https://relay.dev/graphql/connections.htm[Relay Cursor Connections Specification], which allows for pagination using cursors and access to the `pageInfo` field.
 
 === Removed implicit set operations
 
@@ -546,7 +546,7 @@ Implicit set operations in update mutations have been removed and the migration 
 
 [cols="1,1"]
 |===
-| Before (Removed) | After (Desired Syntax)
+| Before | After
 
 a|
 [source, graphql, indent=0]
