@@ -74,11 +74,11 @@ type User @authentication @node {
 
 With this configuration, authentication is validated when any of the following operations are _attempted_:
 
-* *Create*: `createUsers` mutation, `create`, or `connectOrCreate` nested operation via a related type.
-* *Read*: `users`, `usersConnection`, `usersAggregate` query, or access via related type.
+* *Create*: `createUsers` mutation, `create` nested operation via a related type.
+* *Read*: `users`, `usersConnection`, `aggregate` query, or access via related type.
 * *Update*: `updateUsers` mutation or `update` nested operation via a related type.
 * *Delete*: `deleteUsers` mutation or `delete` nested operation via a related type.
-* *Create relationship*: `connect` or `connectOrCreate` nested operation via a related type.
+* *Create relationship*: `connect` nested operation via a related type.
 * *Delete relationship*: `disconnect` nested operation via a related type.
 * *Subscribe*: all subscription operations related to type `User`.
 
@@ -109,7 +109,7 @@ For instance, if it was a requirement that only users with the `admin` role can 
 
 [source, graphql, indent=0]
 ----
-type User @authentication(operations: [DELETE], jwt: { roles_INCLUDES: "admin" }) @node {
+type User @authentication(operations: [DELETE], jwt: { roles: { includes: "admin" }}) @node {
     id: ID!
     name: String!
     password: String!

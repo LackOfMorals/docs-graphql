@@ -27,6 +27,7 @@ type Movie @node {
     title: String
     genre: String
 }
+extend schema @subscription
 ----
 
 A subscription to any newly created node of the `Movie` type should look like this:
@@ -66,6 +67,7 @@ type Movie @node {
     title: String
     genre: String
 }
+extend schema @subscription
 ----
 
 A subscription to any node of the `Movie` type with its properties recently updated should look like this:
@@ -105,6 +107,7 @@ type Movie @node {
     title: String
     genre: String
 }
+extend schema @subscription
 ----
 
 A subscription to any deleted nodes of the `Movie` type should look like this:

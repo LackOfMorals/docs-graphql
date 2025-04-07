@@ -31,7 +31,7 @@ type Series implements Production @node {
 }
 
 type ActedIn @relationshipProperties {
-    role: String!
+    role: String
 }
 
 type Actor @node {
@@ -52,7 +52,7 @@ The following will return all productions with title starting "The " for every a
 query GetProductionsStartingWithThe {
     actors {
         name
-        actedIn(where: { node: { title_STARTS_WITH: "The " } }) {
+        actedIn(where: { node: { title: { startsWith: "The " } } }) {
             title
             ... on Movie {
                 runtime
@@ -65,14 +65,14 @@ query GetProductionsStartingWithThe {
 }
 ----
 
-The following query will only return the movies with title starting with "The " for each actor by filtering them by `typename_IN`:
+The following query will only return the movies with title starting with "The " for each actor by filtering them by `typename`:
 
 [source, graphql, indent=0]
 ----
 query GetMoviesStartingWithThe {
     actors {
         name
-        actedIn(where: { node: { title_STARTS_WITH: "The ", typename_IN: [Movie]  } }) {
+        actedIn(where: { node: { title: { startsWith: "The " }, typename: [Movie]  } }) {
             title
             ... on Movie {
                 runtime
@@ -151,22 +151,26 @@ Take the following example:
 [source, graphql, indent=0]
 ----
 mutation CreateActorAndProductions {
-    updateActors(
-        where: { name_EQ: "Woody Harrelson" }
+  updateActors(
+    where: { name: { eq: "Woody Harrelson" } }
+    update: {
+      actedIn: {
         connect: {
-            actedIn: {
-                where: { node: { title_EQ: "Zombieland" } }
-                connect: { actors: { where: { node: { name_EQ: "Emma Stone" } } } }
-            }
+          where: { node: { title: { eq: "Zombieland" } } }
+          connect: {
+            actors: { where: { node: { name: { eq: "Emma Stone" } } } }
+          }
         }
-    ) {
-        actors {
-            name
-            actedIn {
-                title
-            }
-        }
+      }
     }
+  ) {
+    actors {
+      name
+      actedIn {
+        title
+      }
+    }
+  }
 }
 ----
 
@@ -185,17 +189,17 @@ For example, the following query returns all productions (`movies` and `series`)
 [source, graphql, indent=0]
 ----
 query GetProductionsStartingWithThe {
-    actors {
-        name
-        actedIn(where: { node: { title_STARTS_WITH: "The " } }) {
-            title
-            ... on Movie {
-                runtime
-            }
-            ... on Series {
-                episodes
-            }
-        }
+  actors {
+    name
+    actedIn(where: { title: { startsWith: "The " } }) {
+      title
+      ... on Movie {
+        runtime
+      }
+      ... on Series {
+        episodes
+      }
     }
+  }
 }
 ----

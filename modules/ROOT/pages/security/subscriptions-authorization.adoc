@@ -18,7 +18,7 @@ For instance, here is how to filter out `User` events which don't match the JWT 
 [source, graphql, indent=0]
 ----
 type User @node @subscriptionsAuthorization(filter: [
-    { where: { node: { id_EQ: "$jwt.sub" } } }
+    { where: { node: { id: { eq: "$jwt.sub" } } } }
 ]) {
     id: ID!
 }
@@ -37,7 +37,7 @@ For instance, to only require filtering for mutations to a type itself and not i
 [source, graphql, indent=0]
 ----
 type User @node @subscriptionsAuthorization(filter: [
-    { events: [CREATED, UPDATED, DELETED], where: { node: { id_EQ: "$jwt.sub" } } }
+    { events: [CREATED, UPDATED, DELETED], where: { node: { id: { eq: "$jwt.sub" } } } }
 ]) {
     id: ID!
 }
@@ -53,7 +53,7 @@ For instance, in the case where some `Post` nodes are private whilst other `Post
 [source, graphql, indent=0]
 ----
 type Post @node @subscriptionsAuthorization(filter: [
-    { requireAuthentication: false, where: { node: { public_EQ: true } } }
+    { requireAuthentication: false, where: { node: { public: { eq: true } } } }
 ]) {
     title: String!
     content: String!

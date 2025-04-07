@@ -45,18 +45,23 @@ type Movie @node {
     title: String!
     released: Int!
     actors: [Person!]! @relationship(type: "ACTED_IN", direction: IN)
-    director: Person! @relationship(type: "DIRECTED", direction: IN)
+    directors: [Person!]! @relationship(type: "DIRECTED", direction: IN)
 }
 ----
 
 Note that, in this query:
 
 * A `Person` can _act in_ or _direct_ multiple movies, and a `Movie` can have multiple actors. 
-However, it is rare for a `Movie` to have more than one director, so you can model this cardinality in your type definitions, to ensure accuracy of your data.
-* A `Movie` isn't really a `Movie` without a director, and this has been signified by marking the `director` field as non-nullable.
-This means that a `Movie` *must* have a `DIRECTED` relationship coming into it to be valid.
+  While it is rare for a `Movie` to have more than one director, the Neo4j GraphQL Library requires all relationships to be modeled as "many" relationships (using lists).
+* Even conceptually one-to-one relationships, such as a movie having a single director, must be represented as arrays (e.g., `directors: [Person!]!`) because Neo4j cannot reliably enforce one-to-one cardinality between nodes.
 * To figure out whether the `direction` argument of the `@relationship` directive should be `IN` or `OUT`, visualize your relationships like in the diagram above, then model out the direction of the arrows.
 * The `@relationship` directive is a reference to Neo4j relationships, whereas in the schema, the phrase `edge(s)` is used to be consistent with the general API language used by Relay.
+
+=== Neo4j GraphQL cardinality limitation
+
+It's important to understand that Neo4j cannot reliably enforce one-to-one cardinality between nodes in a graph database.
+Therefore, all relationships in Neo4j GraphQL are modeled as "many" relationships (using lists) even if they represent one-to-one relationships conceptually.
+As an alternative you can define your relationship with the `@cypher` directive, however some of the functionality provided by the Neo4j GraphQL Library will not be available.
 
 === Relationship properties
 
@@ -83,7 +88,7 @@ type Movie @node {
     title: String!
     released: Int!
     actors: [Person!]! @relationship(type: "ACTED_IN", properties: "ActedIn", direction: IN)
-    director: Person! @relationship(type: "DIRECTED", direction: IN)
+    directors: [Person!]! @relationship(type: "DIRECTED", direction: IN)
 }
 
 type ActedIn @relationshipProperties {
@@ -142,7 +147,6 @@ type Person @node {
 ----
 
 `queryDirection` can have the following values:
-
 * `DIRECTED`: only directed queries can be performed on this relationship.
 * `UNDIRECTED`: only undirected queries can be performed on this relationship.
 
@@ -160,20 +164,20 @@ mutation CreateMovieAndDirector {
         {
             title: "Forrest Gump"
             released: 1994
-            director: {
-                create: {
+            directors: {
+                create: [{
                     node: {
                         name: "Robert Zemeckis"
                         born: 1951
                     }
-                }
+                }]
             }
         }
     ]) {
         movies {
             title
             released
-            director {
+            directors {
                 name
                 born
             }
@@ -187,40 +191,40 @@ You then need to create the actor in this example, and connect them to the new `
 [source, graphql, indent=0]
 ----
 mutation CreateActor {
-    createPeople(input: [
-        {
-            name: "Tom Hanks"
-            born: 1956
-            actedInMovies: {
-                connect: {
-                    where: {
-                        node: { title_EQ: "Forrest Gump" }
-                    }
-                    edge: {
-                        roles: ["Forrest"]
-                    }
-                }
-            }
+  createPeople(
+    input: [
+      {
+        name: "Tom Hanks"
+        born: 1956
+        actedInMovies: {
+          connect: {
+            where: { node: { title: { eq: "Forrest Gump" } } }
+            edge: { roles: ["Forrest"] }
+          }
         }
-    ]) {
-        movies {
-            title
-            released
-            director {
-                name
-                born
+      }
+    ]
+  ) {
+    people {
+      name
+      born
+      actedInMovies {
+        title
+        released
+        actorsConnection {
+          edges {
+            properties {
+              roles
             }
-            actorsConnection {
-                edges {
-                    roles
-                    node {
-                        name
-                        born
-                    }
-                }
+            node {
+              name
+              born
             }
+          }
         }
+      }
     }
+  }
 }
 ----
 
@@ -236,7 +240,7 @@ mutation CreateMovieDirectorAndActor {
         {
             title: "Forrest Gump"
             released: 1994
-            director: {
+            directors: {
                 create: {
                     node: {
                         name: "Robert Zemeckis"
@@ -262,13 +266,15 @@ mutation CreateMovieDirectorAndActor {
         movies {
             title
             released
-            director {
+            directors {
                 name
                 born
             }
             actorsConnection {
                 edges {
-                    roles
+                    properties {
+                      roles
+                    }
                     node {
                         name
                         born
@@ -289,16 +295,18 @@ Now that you have the `Movie` information in your database, you can query everyt
 [source, graphql, indent=0]
 ----
 query {
-    movies(where: { title_EQ: "Forrest Gump" }) {
+    movies(where: { title: { eq: "Forrest Gump" } }) {
         title
         released
-        director {
+        directors {
             name
             born
         }
         actorsConnection {
             edges {
-                roles
+                properties {
+                    roles
+                }
                 node {
                     name
                     born
