@@ -831,9 +831,7 @@ This fix applies to both the new filter syntax and the deprecated filters (e.g.,
 
 === List of nullable elements no longer supported
 
-The list of nullable elements is no longer supported in types annotated with the `@node` directive.
-
-The following type definition is no longer supported:
+A list of nullable elements is no longer supported in types annotated with the `@node` directive, for example in the following type definition:
 
 [source, graphql, indent=0]
 ----
@@ -843,9 +841,10 @@ type Actor @node {
 }
 ----
 
-This is due the fact that Neo4j does not support storing NULL values as part of a List.
+This is due the fact that Neo4j does not support storing null values as part of a list.
+To create a similar but supported type definition, change the value of the `pseudonyms` field to a non-nullable list: `[String!]!`.
 
-=== Interfaces and unions cannot be implemented by a mix of `@nodes` and no `@nodes` types.
+=== Interfaces and unions disallow mixing types with and without the `@node` directive
 
 Interfaces and unions can only be implemented by types that are all annotated with the `@node` directive or none of them.
 
