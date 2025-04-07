@@ -831,7 +831,7 @@ This fix applies to both the new filter syntax and the deprecated filters (e.g.,
 
 === List of nullable elements no longer supported
 
-List of nullable elements such are no longer supported in types annotated with the `@node` directive.
+The list of nullable elements is no longer supported in types annotated with the `@node` directive.
 
 The following type definition is no longer supported:
 
@@ -849,7 +849,7 @@ This is due the fact that Neo4j does not support storing NULL values as part of 
 
 Interfaces and unions can only be implemented by types that are all annotated with the `@node` directive or none of them.
 
-The following type definition is no longer supported:
+Type definitions like the following are no longer supported because the `Series` type is missing the `@node` directive:
 
 [source, graphql, indent=0]
 ----
@@ -864,7 +864,7 @@ type Series implements Production {
 }
 ----
 
-=== Relationship fields now require `@node` types
+=== Relationship fields require `@node` types
 
 The `@relationship` directive can only be applied to fields whose types are annotated with the `@node` directive. 
 
