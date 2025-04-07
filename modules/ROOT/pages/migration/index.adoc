@@ -328,11 +328,10 @@ For example, an actor playing multiple roles in the same movie.
 
 === Changed behavior for multiple relationships between nodes
 
-The way multiple relationships between the same two nodes are handled has changed:
+The way multiple relationships are handled between the same two nodes has changed:
 
-* In entity query fields (like `movies`), duplicate nodes will be removed and only distinct results will be returned, regardless of how many relationships exist between the nodes.
-
-* In connection query fields (like `moviesConnection`), all relationships will be represented individually. This allows for projecting relationship properties for each connection between the two nodes.
+* In entity query fields (like `movies`), duplicate nodes are removed and only distinct results are returned, regardless of how many relationships exist between the nodes.
+* In connection query fields (like `moviesConnection`), all relationships are represented individually. This allows for projecting relationship properties for each connection between the two nodes.
 
 For example, consider a scenario where Eddie Murphy played multiple roles in the same movie:
 
@@ -358,7 +357,7 @@ With a standard entity query:
 }
 ----
 
-The result will show "The Nutty Professor" only once (nodes are deduplicated):
+The result shows "The Nutty Professor" only once (nodes are deduplicated):
 
 [source, json, indent=0]
 ----
@@ -430,12 +429,13 @@ The result preserves both relationships with their distinct properties:
 }
 ----
 
-=== The `@private` directive has been removed.
+=== Removed the `@private` directive
 
 This directive was intended to be used with the library `@neo4j/graphql-ogm` which is no longer supported.
 
-=== Schema generation fails if there are conflicting plural names in types
+=== Schema generation avoids conflicting plural names
 
+Schema generation now detects conflicting plural names in types and fails intentionally.
 For example, the following schema will fail due to ambiguous `Techs` plural:
 
 [source, graphql, indent=0]
@@ -487,8 +487,7 @@ type Movie @node @fulltext(
 ----
 
 Full-text search was previously available in two different locations.
-
-The following form has now been completely removed:
+The following form has been completely removed:
 
 [source, graphql, indent=0]
 ----
@@ -500,7 +499,7 @@ The following form has now been completely removed:
 }
 ----
 
-The root-level query has been changed to use the Relay Cursor Connections Specification:
+The root-level query has been changed to use the https://relay.dev/graphql/connections.htm[Relay Cursor Connections Specification]:
 
 [cols="1,1"]
 |===
@@ -538,7 +537,7 @@ query {
 ----
 |===
 
-The new form uses the Relay Cursor Connections Specification, which allows for pagination using cursors and access to the `pageInfo` field.
+The new form uses the  https://relay.dev/graphql/connections.htm[Relay Cursor Connections Specification], which allows for pagination using cursors and access to the `pageInfo` field.
 
 === Removed implicit set operations
 
@@ -546,7 +545,7 @@ Implicit set operations in update mutations have been removed and the migration 
 
 [cols="1,1"]
 |===
-| Before (Removed) | After (Desired Syntax)
+| Before | After
 
 a|
 [source, graphql, indent=0]
@@ -583,9 +582,9 @@ The `implicitSet` option of `excludeDeprecatedFields` has been removed.
 
 === `@coalesce` directive affects projection field values
 
-In version 7.0.0, the `@coalesce` directive now applies to both filter operations and field projections. Previously, the fallback values specified in the `@coalesce` directive were only used when those fields were used in filters, but not on the returned fields.
-
-Now, when you select a field annotated with `@coalesce`, null values will be replaced with the specified fallback value in the query result.
+In version 7.0.0, the `@coalesce` directive now applies to both filter operations and field projections.
+Previously, the fallback values specified in the `@coalesce` directive were only used when those fields were used in filters, but not on the returned fields.
+Now, when you select a field annotated with `@coalesce`, null values are replaced with the specified fallback value in the query result.
 
 Consider this schema:
 
@@ -621,7 +620,7 @@ query {
 }
 ----
 
-Now, the same query will return the coalesced value:
+Now, the same query returns the coalesced value:
 
 [source, json, indent=0]
 ----
@@ -639,7 +638,8 @@ This ensures consistent behavior between filtering and projecting fields with th
 
 === Set `addVersionPrefix` to true by default
 
-In version 7.0.0, the `addVersionPrefix` option is now set to `true` by default. This means that all generated Cypher queries will automatically be prefixed with the Cypher version:
+In version 7.0.0, the `addVersionPrefix` option is set to `true` by default.
+This means that all generated Cypher queries are automatically prefixed with the Cypher version:
 
 [source, cypher, indent=0]
 ----
@@ -648,9 +648,10 @@ CYPHER 5
 MATCH(this:Movie)
 ----
 
-This ensures that the correct Cypher version is used when queries are executed in Neo4j. However, this change may be incompatible with older versions of Neo4j.
+This ensures that the correct Cypher version is used when queries are executed in Neo4j.
+However, this change may be incompatible with older versions of Neo4j.
 
-If you need to disable this behavior, you can set `cypherQueryOptions.addVersionPrefix` to `false` in the context:
+Set `cypherQueryOptions.addVersionPrefix` to `false` to disable this behavior:
 
 [source, javascript, indent=0]
 ----
@@ -677,11 +678,11 @@ await startStandaloneServer(server, {
 ----
 
 
-=== Changed DateTime and Time value conversion behavior
+=== Changed `DateTime` and `Time` value conversion behavior
 
-In version 7.0.0, `DateTime` and `Time` values are now converted from strings into temporal types directly in the generated Cypher queries, rather than in server code using the Neo4j driver.
+In version 7.0.0, `DateTime` and `Time` values are converted from Strings to temporal types directly in the generated Cypher queries, rather than in server code using the Neo4j driver.
 
-For example, if you have a date string in your GraphQL query:
+For example, if you have a date String in your GraphQL query:
 
 [source, graphql, indent=0]
 ----
@@ -702,14 +703,16 @@ WHERE this.releaseDate > datetime($param0)
 RETURN this { .title, .releaseDate } as this
 ----
 
-=== Mutation operations now follow the relationship direction defined in the `@relationship` argument queryDirection
+=== Mutation operations follow relationship directions
 
-Mutation operations now respect the `queryDirection` value defined in the `@relationship` directive when matching existing relationships. This ensures consistent behavior between queries and mutations regarding how relationships are traversed.
+Mutation operations now respect the `queryDirection` value defined in the `@relationship` directive when matching existing relationships.
+This ensures consistent behavior between queries and mutations regarding how relationships are traversed.
 
-Important to note:
-
-- When creating new relationships, the physical direction stored in the database is still determined by the `direction` argument.
-- The change affects only how existing relationships are matched during mutation operations.
+[NOTE]
+====
+ When creating new relationships, the physical direction stored in the database is still determined by the `direction` argument.
+The change affects only how existing relationships are matched during mutation operations.
+====
 
 For example, consider the following schema:
 
@@ -726,13 +729,13 @@ type Person @node {
 }
 ----
 
-With `queryDirection: UNDIRECTED`, mutations will now traverse existing relationships in both directions when matching nodes, regardless of the base `direction` value. This is consistent with how queries work with the same directive configuration.
-
+With `queryDirection: UNDIRECTED`, mutations now traverse existing relationships in both directions when matching nodes, regardless of the base `direction` value.
+This is consistent with how queries work with the same directive configuration.
 Previously, mutations would always follow the explicit `direction` value when matching existing relationships, which could lead to inconsistent behavior between queries and mutations.
 
 === Moved `where` field in nested update operations
 
-The `where` field for nested update operations has been removed, in favour of the `where` inside the nested update input.
+The `where` field for nested update operations has been removed in favor of the `where` inside the nested update input.
 
 [cols="1,1"]
 |===
@@ -802,7 +805,8 @@ type Actor @node {
 }
 ----
 
-Previously, when using `single` or `some` filters with unions, conditions inside these filters were evaluated separately for each concrete type in the union, requiring all of them to match. This was incorrect behavior.
+Previously, when using `single` or `some` filters with unions, conditions inside these filters were evaluated separately for each concrete type in the union, requiring all of them to match.
+This behavior was incorrect.
 
 [source, graphql, indent=0]
 ----
@@ -823,15 +827,54 @@ The fixed behavior in version 7.0.0:
 * `some`: Now correctly returns actors with at least one matching related node of any type in the union.
 
 This change provides more logical and consistent results, but may affect existing queries that relied on the previous behavior.
-
 This fix applies to both the new filter syntax and the deprecated filters (e.g., `actedIn_SINGLE` and `actedIn_SOME`).
+
+=== List of nullable elements no longer supported
+
+A list of nullable elements is no longer supported in types annotated with the `@node` directive, for example in the following type definition:
+
+[source, graphql, indent=0]
+----
+type Actor @node {
+  name: String
+  pseudonyms: [String]!
+}
+----
+
+This is due the fact that Neo4j does not support storing null values as part of a list.
+To create a similar but supported type definition, change the value of the `pseudonyms` field to a non-nullable list: `[String!]!`.
+
+=== Interfaces and unions disallow mixing types with and without the `@node` directive
+
+Interfaces and unions can only be implemented by types that are all annotated with the `@node` directive or none of them.
+
+Type definitions like the following are no longer supported because the `Series` type is missing the `@node` directive:
+
+[source, graphql, indent=0]
+----
+interface Production @node {
+  title: String
+}
+type Movie @node implements Production {
+  title: String
+}
+type Series implements Production {
+  title: String
+}
+----
+
+=== Relationship fields require `@node` types
+
+The `@relationship` directive can only be applied to fields whose types are annotated with the `@node` directive. 
+
+This also applies to fields defined as interfaces and unions where they must be implemented exclusively by `@node` types.
 
 
 == Deprecations
 
 === Deprecated mutations operators outside dedicated input
 
-The following operators:
+The following operators are now deprecated:
 
 - `_SET`
 - `_POP`
@@ -843,7 +886,7 @@ The following operators:
 - `_MULTIPLY`
 - `_DIVIDE`
 
-are now deprecated. You should now use the dedicated input object versions:
+Use the dedicated input object versions instead:
 
 [cols="1,1"]
 |===
@@ -893,7 +936,8 @@ const neoSchema = new Neo4jGraphQL({
 
 === Deprecated the _EQ filter syntax
 
-The `_EQ` filter syntax is now deprecated. You should now use the dedicated input object versions:
+The `_EQ` filter syntax is now deprecated.
+Use the dedicated input object versions instead:
 
 [cols="1,1"]
 |===
@@ -933,7 +977,8 @@ const neoSchema = new Neo4jGraphQL({
 
 === Deprecated aggregation filters outside connection fields
 
-The aggregation filters outside connection fields are now deprecated. You should use the aggregation filters within connection input fields instead:
+The aggregation filters outside connection fields are now deprecated.
+Use the aggregation filters within connection input fields instead:
 
 [cols="1,1"]
 |===
@@ -971,9 +1016,10 @@ const neoSchema = new Neo4jGraphQL({
 });
 ----
 
-=== Deprecated Aggregation filters outside dedicated input
+=== Deprecated aggregation filters outside dedicated input
 
-Aggregation filters outside dedicated input like `_AVERAGE_GT` are now deprecated. You should use the dedicated input object versions:
+Aggregation filters outside dedicated input like `_AVERAGE_GT` are now deprecated.
+Use the dedicated input object versions instead:
 
 [cols="1,1"]
 |===
@@ -1019,7 +1065,8 @@ const neoSchema = new Neo4jGraphQL({
 
 === Deprecated relationship filters outside dedicated input
 
-The relationship filtering syntax outside dedicated input like `_SOME`, `_ALL`, and `_NONE` is now deprecated. You should use the dedicated input object versions:
+The relationship filtering syntax outside dedicated input like `_SOME`, `_ALL`, and `_NONE` is now deprecated.
+Use the dedicated input object versions instead:
 
 [cols="1,1"]
 |===
