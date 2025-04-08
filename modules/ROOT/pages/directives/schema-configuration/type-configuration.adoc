@@ -20,7 +20,6 @@ From these type definitions, the library generates the following operation field
 **Query**:
 
     * `movies`
-    * `moviesAggregate`
     * `moviesConnection`
 
 **Mutation**:
@@ -34,7 +33,12 @@ From these type definitions, the library generates the following operation field
     * `movieCreated`
     * `movieUpdated`
     * `movieDeleted`
-.
+
+**moviesConnection**:
+    * `aggregate`
+    * `edges`
+    * `totalCount`
+    * `pageInfo`
 
 This page describes how to reduce the operation fields produced using the directives `@query`, `@mutation`, and `@subscription`.
 
@@ -51,7 +55,7 @@ directive @query(read: Boolean! = true, aggregate: Boolean! = false) on OBJECT |
 
 === Usage
 
-.Disable _movies_ and _moviesConnection_ operations
+.Disable query _movies_ and _moviesConnection_ edges field
 [source, graphql, indent=0]
 ----
 type Movie @node @query(read: false, aggregate: true) { 
@@ -60,7 +64,7 @@ type Movie @node @query(read: false, aggregate: true) {
 }
 ----
 
-.Disable _moviesAggregate_ operations
+.Disable _moviesConnection_ aggregate field
 [source, graphql, indent=0]
 ----
 type Movie @node @query(read: true, aggregate: false)  { 
@@ -108,7 +112,8 @@ type Movie @node @mutation(operations: [CREATE]) {
 
 == `@subscription`
 
-This directive is used to limit subscription operations in the library.
+This directive is used to enable subscription operations in the library. 
+Subscriptions are opt-in by default, meaning that they are disabled unless explicitly enabled.
 
 === Definition
 
@@ -125,15 +130,6 @@ directive @subscription(events: [SubscriptionFields!]! = [CREATED, UPDATED, DELE
 
 === Usage
 
-.Disable subscriptions for _Movie_
-[source, graphql, indent=0]
-----
-type Movie @node @subscription(events: [])  { 
-    title: String 
-    length: Int
-}
-----
-
 .Enable only _movieCreated_ subscription for _Movie_
 [source, graphql, indent=0]
 ----
@@ -141,6 +137,22 @@ type Movie @node @subscription(events: [CREATED]) {
     title: String 
     length: Int
 }
+----
+
+.Enable subscriptions for all types except for _Movie_
+[source, graphql, indent=0]
+----
+type Movie @node @subscription(events: [])  { 
+    title: String 
+    length: Int
+}
+
+type Actor @node  { 
+    name: String 
+    movies: [Movie!]! @relationship(type: "ACTED_IN", direction: OUT) 
+}
+
+extend schema @subscription
 ----
 
 [[type-definitions-default-values-default]]

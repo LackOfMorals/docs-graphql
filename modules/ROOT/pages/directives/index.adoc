@@ -108,8 +108,6 @@ Particularly useful for types that are not correctly pluralized or are non-Engli
 | xref::/directives/indexes-and-constraints.adoc#_fulltext[`@fulltext`]
 | Indicates that there should be a fulltext index inserted into the database for the specified Node and its properties.
 
-| xref::/directives/indexes-and-constraints.adoc#_unique[`@unique`]
-| Indicates that there should be a uniqueness constraint in the database for the fields that it is applied to.
 
 | xref::/directives/indexes-and-constraints.adoc#_vector_index_search[`@vector`]
 | Perform a vector index search on your database either based by passing in a vector index or a search phrase.

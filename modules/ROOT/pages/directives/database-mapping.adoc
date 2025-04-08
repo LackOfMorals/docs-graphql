@@ -35,8 +35,7 @@ type Movie @node {
 
 [NOTE]
 ====
-In version 6.x, it's not required to specify every GraphQL type representing a Neo4j node with the `@node` directive.
-In the future, types without the `@node` directive will no longer be treated as Neo4j nodes.
+Types without the `@node` directive are not treated as Neo4j nodes, and queries and mutations are not generated for them.
 ====
 
 When not differently specified, the GraphQL type name is used as a label for the represented Neo4j node. It's possible to explicitly define the Neo4j node labels by using the parameter `labels`.
@@ -224,12 +223,12 @@ To add two node types, "Movie" and "Actor", and connect the two:
 
 [source, graphql, indent=0]
 ----
-type Movie {
+type Movie @node {
     title: String
     actors: [Actor!]! @relationship(type: "ACTED_IN", direction: IN)
 }
 
-type Actor {
+type Actor @node {
     name: String
     movies: [Movie!]! @relationship(type: "ACTED_IN", direction: OUT)
 }
@@ -264,12 +263,12 @@ For example, for the "ACTED_IN" relationship, add a property "roles":
 
 [source, graphql, indent=0]
 ----
-type Movie {
+type Movie @node {
     title: String
     actors: [Actor!]! @relationship(type: "ACTED_IN", direction: IN, properties: "ActedIn")
 }
 
-type Actor {
+type Actor @node {
     name: String
     movies: [Movie!]! @relationship(type: "ACTED_IN", direction: OUT, properties: "ActedIn")
 }

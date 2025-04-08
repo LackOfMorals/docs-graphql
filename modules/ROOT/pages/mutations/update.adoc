@@ -12,7 +12,7 @@ Consider the following type definitions:
 type Post @node {
     id: ID! @id
     content: String!
-    creator: User! @relationship(type: "HAS_POST", direction: IN)
+    creator: [User!]! @relationship(type: "HAS_POST", direction: IN)
 }
 
 type User @node {
@@ -58,18 +58,14 @@ You can update the content of a `Post` by executing the following GraphQL statem
 [source, graphql, indent=0]
 ----
 mutation {
-    updatePosts(
-        where: {
-            id_EQ: "892CC104-A228-4BB3-8640-6ADC9F2C2A5F"
-        }
-        update: {
-            content: "Some new content for this Post!"
-        }
-    ) {
-        posts {
-            content
-        }
+  updatePosts(
+    where: { id: { eq: "892CC104-A228-4BB3-8640-6ADC9F2C2A5F" } }
+    update: { content: { set: "Some new content for this Post!" } }
+  ) {
+    posts {
+      content
     }
+  }
 }
 ----
 
@@ -83,7 +79,7 @@ Instead of creating a `Post` with the `create` mutation and then connecting it t
 ----
 mutation {
     updateUsers(
-        where: { name_EQ: "John Doe" }
+        where: { name: { eq: "John Doe" } }
         update: {
             posts: {
                 create: [
@@ -103,53 +99,6 @@ mutation {
 }
 ----
 
-== `connectOrCreate` relationships
-
-Consider the example provided in the xref:mutations/create.adoc#_connectorcreate_relationships[`create`] page:
-
-[source, graphql, indent=0]
-----
-mutation {
-  createActors(input: {
-    name: "Tom Hanks",
-    movies: {
-      connectOrCreate: {
-        where: { node: { id_EQ: "1234" } }
-        onCreate: { node: { title: "Forrest Gump" } }
-      }
-    }
-  }) {
-    info {
-      nodesCreated
-    }
-  }
-}
-----
-
-`connectOrCreate` is also available in `update` operations:
-
-[source, graphql, indent=0]
-----
-mutation {
-  updateActors(
-      update: {
-        movies: {
-            connectOrCreate: {
-                where: { node: { id_EQ: "1234" } }
-                onCreate: { node: { title: "Forrest Gump" } }
-            }
-        }
-      },
-      where: { name_EQ: "Tom Hanks" }
-  ) {
-    info {
-      nodesCreated
-    }
-  }
-}
-----
-
-This operation is equivalent to the previous example.
 
 == Array methods
 
@@ -161,12 +110,12 @@ Array methods allow the modification of existing property arrays in `update` mut
 
 For that, the following operators are available:
 
-* `_PUSH`
-* `_POP`
+* `push`
+* `pop`
 
-=== `_PUSH`
+=== `push`
 
-`_PUSH` conforms to the type of input defined in the type definition.
+`push` conforms to the type of input defined in the type definition.
 
 Consider the following type definitions, a `Movie` with a property array of `String` types called `tags`:
 
@@ -174,18 +123,18 @@ Consider the following type definitions, a `Movie` with a property array of `Str
 ----
 type Movie @node {
     title: String
-    tags: [String]
+    tags: [String!]
 }
 ----
 
 You can push tags to the `tags` property array:
 
-.Mutation with a single `_PUSH`
+.Mutation with a single `push`
 ====
 [source, graphql, indent=0]
 ----
 mutation {
-    updateMovies (update: { tags_PUSH: "another tag" }) {
+    updateMovies (update: { tags: { push: "another tag" } }) {
         movies {
             title
             tags
@@ -205,12 +154,12 @@ mutation {
 
 Or push multiple elements in a single update:
 
-.Mutation with two `_PUSH`
+.Mutation with two `push`
 ====
 [source, graphql, indent=0]
 ----
 mutation {
-    updateMovies (update: { tags_PUSH: ["another tag", "one more tag"] }) {
+    updateMovies (update: { tags: { push: ["another tag", "one more tag"] } }) {
         movies {
             title
             tags
@@ -234,8 +183,8 @@ Similarly, you can have multiple array property fields and update them in the sa
 ----
 type Movie @node {
     title: String
-    tags: [String]
-    moreTags: [String]
+    tags: [String!]
+    moreTags: [String!]
 }
 ----
 
@@ -245,7 +194,7 @@ You can also push to both the `tags` and `moreTags` property arrays:
 [source, graphql, indent=0]
 ----
 mutation {
-    updateMovies (update: { tags_PUSH: "another tag", moreTags_PUSH: "a different tag" }) {
+    updateMovies (update: { tags: { push: "another tag" }, moreTags: { push: "a different tag" } }) {
         movies {
             title
             tags
@@ -282,7 +231,7 @@ Consider the following type definitions, a `Movie` with a property array called 
 ----
 type Movie @node {
     title: String
-    tags: [String]
+    tags: [String!]
 }
 ----
 
@@ -293,7 +242,7 @@ You can pop from this `tags` property array:
 [source, graphql, indent=0]
 ----
 mutation {
-    updateMovies (update: { tags_POP: 1 }) {
+    updateMovies (update: { tags: { pop: 1 } }) {
         movies {
             title
             tags
@@ -324,12 +273,12 @@ Or, for more than one property from the array:
 [source, graphql, indent=0]
 ----
 mutation {
-    updateMovies (update: { tags_POP: 2 }) {
-        movies {
-            title
-            tags
-        }
+  updateMovies(update: { tags: { pop: 2 } }) {
+    movies {
+      title
+      tags
     }
+  }
 }
 ----
 
@@ -355,8 +304,8 @@ Similarly, you can have multiple array property fields and update them in the sa
 ----
 type Movie @node {
     title: String
-    tags: [String]
-    moreTags: [String]
+    tags: [String!]
+    moreTags: [String!]
 }
 ----
 
@@ -367,13 +316,13 @@ Then, you can pop from both the `tags` and `moreTags` property arrays:
 [source, graphql, indent=0]
 ----
 mutation {
-    updateMovies (update: { tags_POP: 1, moreTags_POP: 2 }) {
-        movies {
-            title
-            tags
-            moreTags
-        }
+  updateMovies(update: { tags: { pop: 1 }, moreTags: { pop: 2 } }) {
+    movies {
+      title
+      tags
+      moreTags
     }
+  }
 }
 ----
 
@@ -404,17 +353,15 @@ They are supported within these entities:
 * Relationship properties
 * Interfaces
 
-For the `Int` and `BigInt` types, the following operators are available:
+For the `Int`. `Float` and `BigInt` types, the following operators are available:
 
-* `_INCREMENT`
-* `_DECREMENT`
+* `add`
+* `subtract`
 
-For the `Float` type, the following operators are available:
+For the `Float` type these additional operators are also available:
 
-* `_ADD`
-* `_SUBTRACT`
-* `_MULTIPLY`
-* `_DIVIDE`
+* `multiply`
+* `divide`
 
 [NOTE]
 ====
@@ -429,7 +376,7 @@ For example, consider the following GraphQL schema for a social video platform:
 type Video @node {
   id: ID @id
   views: Int
-  ownedBy: User @relationship(type: "OWN_VIDEO", properties: "OwnVideo", direction: IN)
+  ownedBy: [User!]! @relationship(type: "OWN_VIDEO", properties: "OwnVideo", direction: IN)
 }
 
 type User @node {
@@ -449,8 +396,8 @@ Here is how you can do that:
 ----
 mutation incrementViewCountMutation {
   updateVideos(
-    where: { id_EQ: "VideoID" }
-    update: { views_INCREMENT: 1 }
+    where: { id: { eq: "VideoID" } }
+    update: { views: { add: 1 } }
   ) {
     videos {
       id
@@ -467,14 +414,16 @@ To do that, you have to update the relationship property `revenue`:
 ----
 mutation addRevenueMutation {
   updateUsers(
-    where: { id_EQ: "UserID" },
-    update: { ownVideo: [{ update: { edge: { revenue_ADD: 0.01 } } }] }
+    where: { id: { eq: "UserID" } }
+    update: { ownVideo: [{ update: { edge: { revenue: { add: 0.01 } } } }] }
   ) {
     users {
       id
       ownVideoConnection {
         edges {
-          revenue
+          properties {
+            revenue
+          }
         }
       }
     }

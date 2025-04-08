@@ -49,7 +49,7 @@ You can delete a single post by executing the following GraphQL statement:
 ----
 mutation {
     deletePosts(where: {
-        id_EQ: "6042E807-47AE-4857-B7FE-1AADF522DE8B"
+        id: { eq: "6042E807-47AE-4857-B7FE-1AADF522DE8B" }
     }) {
         nodesDeleted
         relationshipsDeleted
@@ -67,7 +67,7 @@ In case you want to delete a `User` and all of their posts, you can use a single
 [source, graphql, indent=0]
 ----
 mutation {
-  deleteUsers(where: { name_EQ: "Jane Doe" }, delete: { posts: {} }) {
+  deleteUsers(where: { name: { eq: "Jane Doe" } }, delete: { posts: {} }) {
     nodesDeleted
     relationshipsDeleted
   }
