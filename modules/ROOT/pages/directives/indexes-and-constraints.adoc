@@ -16,8 +16,8 @@ For example:
 [source, graphql, indent=0]
 ----
 input FullTextInput {
-  indexName: String
-  queryName: String
+  indexName: String!
+  queryName: String!
   fields: [String]!
 }
 

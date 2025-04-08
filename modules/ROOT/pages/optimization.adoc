@@ -23,13 +23,13 @@ const neoSchema = new Neo4jGraphQL({
     driver,
     features: {
         excludeDeprecatedFields: {
-            implicitEqualFilters: true;
-            deprecatedOptionsArgument: true;
-            directedArgument: true;
-        },
+            mutationOperations: true;
+            aggregationFilters: true;
+            aggregationFiltersOutsideConnection: true;
+            relationshipFilters: true;
+            attributeFilters: true;
+      };
     },
 });
 ```
-
-;
 

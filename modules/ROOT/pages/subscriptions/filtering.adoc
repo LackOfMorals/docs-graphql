@@ -26,10 +26,10 @@ For the `Boolean` type, these are the only available comparison operators.
 
 The following comparison operators are available for numeric types (`Int`, `Float`, xref::types/index.adoc[`BigInt`]):
 
-* `_LT`
-* `_LTE`
-* `_GTE`
-* `_GT`
+* `lt`
+* `lte`
+* `gte`
+* `gt`
 
 [NOTE]
 ====
@@ -40,19 +40,19 @@ Filtering on xref::types/temporal.adoc[Temporal types] and xref::types/spatial.a
 
 The following case-sensitive comparison operators are only available for use on `String` and `ID` types:
 
-* `_STARTS_WITH`
-* `_ENDS_WITH`
-* `_CONTAINS`
+* `startsWith`
+* `endsWith`
+* `contains`
 
 === Array comparison
 
 The following operator is available on non-array fields, and accepts an array argument:
 
-* `_IN`
+* `in`
 
 Conversely, the following operator is available on array fields, and accepts a single argument:
 
-* `_INCLUDES`
+* `includes`
 
 These operators are available for all types apart from `Boolean`.
 
@@ -79,6 +79,7 @@ type Movie @node {
     averageRating: Float
     releasedIn: Int
 }
+extend schema @subscription
 ----
 
 Now, here is how filtering can be applied when creating a subscription:
@@ -90,7 +91,7 @@ To filter subscriptions to `create` operations for movies by their genre, here i
 [source, graphql, indent=0]
 ----
 subscription {
-    movieCreated(where: { genre_EQ: "Drama" }) {
+    movieCreated(where: { genre: { eq: "Drama" } }) {
         createdMovie {
             title
         }
@@ -112,7 +113,7 @@ Here is how to filter subscription to `update` operations in movies with average
 [source, graphql, indent=0]
 ----
 subscription {
-    movieUpdate(where: { averageRating_GT: 8 }) {
+    movieUpdate(where: { averageRating: { gt: 8 } }) {
         updatedMovie {
             title
         }
@@ -144,14 +145,14 @@ mutation {
 
 mutation {
     updateTheMatrix: updateMovie(
-        where: { title_EQ: "The Matrix" }
-        update: { averageRating: 7.9 }
+        where: { title: { eq: "The Matrix" } }
+        update: { averageRating: { set: 7.9 }}
     ) {
         title
     },
     updateResurrections: updateMovie(
-        where: { title_EQ: "The Matrix Resurrections" }
-        update: { averageRating: 8.9 }
+        where: { title: { eq: "The Matrix Resurrections" }}
+        update: { averageRating: { set: 8.9 }}
     ) {
         title
     }
@@ -167,7 +168,7 @@ Here is how to filter subscription to `delete` operations in movies by their gen
 [source, graphql, indent=0]
 ----
 subscription {
-    movieDeleted(where: { NOT: { genre_EQ: "Comedy" } }) {
+    movieDeleted(where: { NOT: { genre: { eq: "Comedy" } } }) {
         deletedMovie {
             title
         }
@@ -196,12 +197,12 @@ They could subscribe to any updates that cover this particular set of interests 
 subscription {
     movieUpdated(where: {
         OR: [
-            { title_CONTAINS: "Matrix" },
-            { genre_EQ: "comedy" },
+            { title: { contains: "Matrix" } },
+            { genre: { eq: "comedy"} },
             { AND: [ 
-                { NOT: { genre_EQ: "romantic comedy" } },
-                { releasedIn_GT: 2000 },
-                { releasedIn_LTE: 2005 }
+                { NOT: { genre: { eq: "romantic comedy" }} },
+                { releasedIn: { gt: 2000 } },
+                { releasedIn: { lte: 2005 } }
             ] },
         ]
     }) {

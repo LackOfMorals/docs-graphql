@@ -37,12 +37,11 @@ export type Neo4jFeaturesSettings = {
      * NOTE: this will not remove user defined deprecated fields
      **/
     excludeDeprecatedFields?: {
-        bookmark?: boolean;
-        negationFilters?: boolean;
-        arrayFilters?: boolean;
-        stringAggregation?: boolean;
+        mutationOperations?: boolean;
         aggregationFilters?: boolean;
-        nestedUpdateOperationsFields?: boolean;
+        aggregationFiltersOutsideConnection?: boolean;
+        relationshipFilters?: boolean;
+        attributeFilters?: boolean;
     };
     vector?: Neo4jVectorSettings;
 };
@@ -72,7 +71,6 @@ See xref:security/configuration.adoc[Security > Configuration].
 
 Enable the `subscriptions` feature of the Neo4j GraphQL Library by setting it to `true`.
 It is also used to provide subscription settings. See xref:subscriptions/customize-cdc.adoc[Subscription engines].
-
 
 === Exclude deprecated fields
 

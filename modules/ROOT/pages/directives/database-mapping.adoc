@@ -218,12 +218,12 @@ To add two node types, "Movie" and "Actor", and connect the two:
 
 [source, graphql, indent=0]
 ----
-type Movie {
+type Movie @node {
     title: String
     actors: [Actor!]! @relationship(type: "ACTED_IN", direction: IN)
 }
 
-type Actor {
+type Actor @node {
     name: String
     movies: [Movie!]! @relationship(type: "ACTED_IN", direction: OUT)
 }
@@ -258,12 +258,12 @@ For example, for the "ACTED_IN" relationship, add a property "roles":
 
 [source, graphql, indent=0]
 ----
-type Movie {
+type Movie @node {
     title: String
     actors: [Actor!]! @relationship(type: "ACTED_IN", direction: IN, properties: "ActedIn")
 }
 
-type Actor {
+type Actor @node {
     name: String
     movies: [Movie!]! @relationship(type: "ACTED_IN", direction: OUT, properties: "ActedIn")
 }

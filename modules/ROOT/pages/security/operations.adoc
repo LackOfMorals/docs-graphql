@@ -125,7 +125,7 @@ For single `delete` mutations, rules with `DELETE` on the object are evaluated:
 [source, graphql, indent=0]
 ----
 mutation {
-    deleteMovies(where: { title_EQ: "The Matrix" }) { # DELETE ON OBJECT Movie
+    deleteMovies(where: { title: { eq: "The Matrix" } }) { # DELETE ON OBJECT Movie
         nodesDeleted
     }
 }
@@ -136,9 +136,9 @@ For `delete` mutations with nested delete operations, rules with operation `DELE
 [source, graphql, indent=0]
 ----
 mutation {
-    deleteMovies(                                                  # DELETE ON OBJECT Movie
-        where: { title_EQ: "The Matrix" }
-        delete: { actors: { where: { node: { name_EQ: "Keanu" } } } } # DELETE ON OBJECT Actor
+    deleteMovies(                                                          # DELETE ON OBJECT Movie
+        where: { title: { eq: "The Matrix" } }
+        delete: { actors: { where: { node: { name: { eq: "Keanu" } } } } } # DELETE ON OBJECT Actor
     ) { 
         nodesDeleted
     }
@@ -153,16 +153,16 @@ For a complex `update` mutation with many effects, a variety of rules is evaluat
 ----
 mutation {
     updateMovies(
-        where: { title_EQ: "The Matrix" }
-        connect: { actors: { where: { node: { name_EQ: "Keanu" } } } } # CONNECT ON OBJECT Actor and Movie
-        update: {                                                   # UPDATE ON OBJECT Movie
-            title: "Speed"                                          # UPDATE ON FIELD_DEFINITION Movie.title
+        where: { title: { eq: "The Matrix" } }
+        connect: { actors: { where: { node: { name: { eq: "Keanu" } } } } } # CONNECT ON OBJECT Actor and Movie
+        update: {                                                           # UPDATE ON OBJECT Movie
+            title: { set: "Speed" }                                         # UPDATE ON FIELD_DEFINITION Movie.title
         }
     ) {
-        movies {                                                    # READ ON OBJECT Movie
-            title                                                   # READ ON FIELD_DEFINITION Movie.title
-            actors {                                                # READ ON OBJECT Actor
-                name                                                # READ ON FIELD_DEFINITION Actor.name
+        movies {                                                            # READ ON OBJECT Movie
+            title                                                           # READ ON FIELD_DEFINITION Movie.title
+            actors {                                                        # READ ON OBJECT Actor
+                name                                                        # READ ON FIELD_DEFINITION Actor.name
             }
         }
     }

@@ -261,7 +261,7 @@ type Mutation {
 
 == `@coalesce`
 
-When translating from GraphQL to Cypher, any instances of fields to which this directive is applied will be wrapped in a `coalesce()` function in the WHERE clause.
+When translating from GraphQL to Cypher, any instances of fields to which this directive is applied will be wrapped in a `coalesce()` function in the WHERE and RETURN clause.
 For more information, see link:https://neo4j.com/developer/kb/understanding-non-existent-properties-and-null-values/#_use_coalesce_to_use_a_default_for_a_null_value[Understanding non-existent properties and working with nulls].
 
 This directive helps querying against non-existent properties in a database. 
