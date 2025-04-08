@@ -1,50 +1,52 @@
-= Ending with the Beta
+= End of beta phase
 
-On the 18th April the Beta will end.  If you have already achieved what you set out to do or will be wrapping up before that date, there are three steps that we suggest you take
+The beta phase of GraphQL for Neo4j AuraDB will end on the 18th of April 2025.
+To prevent data loss and wrap up your beta experience we suggest you take the following steps:
 
 * Backup GraphQL Data API configuration
 * Remove the GraphQL Data API
 * Provide feedback 
 
-Doing nothing is an option although you need to be aware that any running GraphQL Data API after the 18th April will be terminated resulting in the loss of it configuration information including Type Definitions.  You strongly advised to take action before that time.
+You are not required to take action.
+However, any running GraphQL Data API will be terminated after the 18th of April, resulting in the loss of its configuration information including type definitions.
 
 
 == Backup the GraphQL Data API configuration
 
-Saving your GraphQL Data API configuration makes re-use much quicker if you decide to use this feature once it is released fully.  If you don't want to do that and want to run your own GraphQL service, part of the retreived information includes the Type Definitions that can be used for that purpose
+Backing up your GraphQL Data API configuration makes re-use much quicker if you decide to use this feature once it is released.
+If you want to run your own GraphQL service instead, the backup might still be useful since it includes the type definitions which can be used for that purpose.
 
-There are two ways to perform a backup
+There are two ways to perform a backup:
 
-* Manually copy them one by one from the Console
-* Using the Aura CLI to obtain everything in one operation
+* Manually copy them one by one from the Aura Console
+* Using the Aura CLI to obtain everything in a single operation
 
 
 === Console
-If you want to retain only parts of the configuration, this is a fairly quick method to do so.  If you are intent on backing up all of the configuration is it recommended to use the Aura CLI
 
-1. After entering the Console, select *Data API* from the left hand navigation bar
+If you want to retain only parts of the configuration, this is a quick method to do so.
+If you are intent on backing up all of the configuration, use the xref:#_aura_cli[] instead.
+
+1. On Aura Console, select **Data API** from the left side navigation.
 +
 image::aura-graphql/console_data_api_sidebar.png[]
 +
-
-2. A table will be shown that contains your GraphQL Data APIs. On the row with the GraphQL Data API that you wish to backup, click image:aura-graphql/three-dots.png[] and, from the menu, choose *Edit*
+2. The table shows your GraphQL Data APIs. Use the three dots on the row with the GraphQL Data API that you wish to backup and select **Edit**.
 +
 image::aura-graphql/console_data_api_edit_menu.png[]
 +
-
-3. Expand each of the sections and then make a note of the setting or copy as necessary
+3. Expand each of the sections and then make a note of the setting or copy as necessary.
 +
 image::aura-graphql/console_data_api_edit.png[]
-+
-4. When you are finished, select *Back*
 
 
 === Aura CLI
 
-It is assumed that you have already configured the Aura CLI.  If you have not, follow the guidance provided in  xref:aura-graphql/prerequisites.adoc#_install_and_configure_the_aura_cli[`Install and configure the Aura CLI`]
+This section assumes that you have configured the Aura CLI.
+If you have not, follow the guidance provided in  xref:aura-graphql/prerequisites.adoc#_install_and_configure_the_aura_cli[].
 
 
-1. Lookup the Aura instance ID that the GraphQL API is being used with
+1. Look up the Aura instance ID that the GraphQL API is being used with.
 +
 [source, bash, indent=0]
 ----
@@ -52,7 +54,7 @@ aura-cli instance list --output table
 ----
 +
 
-2. From the displayed table, make a note of relevant Aura ID.   This ID will then be used to obtain the ID of the GraphQL API whose configuration will be backed up.
+2. From the displayed table, make a note of relevant Aura ID. Use this ID to obtain the ID of the GraphQL API whose configuration you want to back up.
 +
 [source, bash, indent=0]
 ----
@@ -60,24 +62,25 @@ aura-cli data-api graphql list --instance-id YOUR_AURA_INSTANCE_ID --output tabl
 ----
 +
 
-3. Finally, obtain the configuration of the GraphQL API itself that will be shown to you in the form of a JSON document.
+3. Finally, obtain the configuration of the GraphQL API itself in JSON format.
 +
 [source, bash, indent=0]
 ----
 aura-cli data-api graphql get  YOUR_GRAPHQL_DATA_API_ID  --instance-id YOUR_AURA_INSTANCE_ID 
 ----
 +
-
-4. Save the output to safe location for any future use.
+4. Save the output for future use.
 
 [NOTE]
 ====
-Type Definitions are stored using Base64 encoding.  You will need to decode them back to plain text before using with other systems.
+Type definitions are stored using Base64 encoding.
+Decode them to plain text before using with other systems.
 ====  
 
 
 == Removing the GraphQL Data API
-This can be performed using the Console or with the Aura CLI.  Both methods are described below
+
+Remove the GraphQL Data API either via Aura Console or with the Aura CLI.
 
 [WARNING]
 ====
@@ -86,28 +89,24 @@ Once the GraphQL Data API has been deleted, it cannot be recovered.
 
 
 === Console
-1. After entering the Console, select *Data API* from the left hand navigation bar
+
+1. In Aura Console, select **Data API** from the left side navigation.
 +
 image::aura-graphql/console_data_api_sidebar.png[]
 +
-
-2. A table will be shown that contains your GraphQL Data APIs. On the row with the GraphQL Data API that you wish to remove, click image:aura-graphql/three-dots.png[] and, from the menu, choose *Delete* 
-
+2. The table contains your GraphQL Data APIs. Use the three dots on the row with the GraphQL Data API that you wish to remove and select **Delete**. 
 +
 image::aura-graphql/console_data_api_delete_menu.png[]
 +
-
-3. Type in the name of your GraphQL API and then click *Delete*
+3. Type in the name of your GraphQL API and confirm with **Delete**.
 +
 image::aura-graphql/console_data_api_confirm_delete_menu.png[]
-+
-
-4. The GraphQL API will now be deleted.
-
 
 
 === Aura CLI 
-It is assumed that you have already configured the Aura CLI.  If you have not, follow the guidance provided in  xref:aura-graphql/prerequisites.adoc#_install_and_configure_the_aura_cli[`Install and configure the Aura CLI`]
+
+This section assumes that you have configured the Aura CLI.
+If you have not, follow the guidance provided in  xref:aura-graphql/prerequisites.adoc#_install_and_configure_the_aura_cli[].
 
 1. Locate the Aura instance ID that the GraphQL API is being used with.
 +
@@ -116,29 +115,24 @@ It is assumed that you have already configured the Aura CLI.  If you have not, f
 aura-cli instance list --output table
 ----
 +
-
-2. From the displayed table, make a note of relevant Aura ID.   This ID will then be used to obtain the ID of the GraphQL API whose configuration will be backed up.
+2. From the displayed table, make a note of the relevant Aura ID. Use the ID to obtain the ID of the GraphQL API whose configuration you want to back up.
 +
 [source, bash, indent=0]
 ----
 aura-cli data-api graphql list --instance-id YOUR_AURA_INSTANCE_ID --output table
 ----
 +
-
 3. Delete the GraphQL API.  
 +
 [WARNING]
 ====
-The Aura CLI does not ask for confirmation and processes the commmand immediately.  
+The Aura CLI does not ask for confirmation and processes the command immediately.  
 ====
 +
 [source, bash, indent=0]
 ----
 aura-cli data-api graphql delete YOUR_GRAPHQL_DATA_API_ID  --instance-id YOUR_AURA_INSTANCE_ID --output table
 ----
-+
-4. The GraphQL API is now deleted
-
 
 
 == Provide feedback 
