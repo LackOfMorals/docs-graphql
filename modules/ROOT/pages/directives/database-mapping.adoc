@@ -33,11 +33,6 @@ type Movie @node {
 }
 ----
 
-[NOTE]
-====
-Types without the `@node` directive are not treated as Neo4j nodes, and queries and mutations are not generated for them.
-====
-
 When not differently specified, the GraphQL type name is used as a label for the represented Neo4j node. It's possible to explicitly define the Neo4j node labels by using the parameter `labels`.
 
 ==== The `labels` parameter
