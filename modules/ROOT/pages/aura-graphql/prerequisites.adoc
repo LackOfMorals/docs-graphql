@@ -191,13 +191,6 @@ The following are not currently supported:
 Using the link:https://graphql-toolbox.neo4j.io/[Neo4j GraphQL Toolbox] is an easy way to produce and try out type definitions.
 Use of the Toolbox requires a connection to your Aura instance.
 
-[NOTE]
-====
-The *Neo4j GraphQL Toolbox* currently,supports version 6 of the `@neo4j/graphql` library.
-However, GraphQL APIs run the version 7 alpha.
-As a result, type definitions created via the toolbox may not be valid with a GraphQL API.
-You can find a list of the breaking changes link:https://github.com/neo4j/graphql/releases?q=%40neo4j%2Fgraphql%407.0.0-alpha&expanded=true[here].
-====
 
 When your type definitions are ready, save them to a file.
 They will be used with the Aura CLI to create the GraphQL API.
