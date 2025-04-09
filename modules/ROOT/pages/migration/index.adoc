@@ -769,7 +769,7 @@ type Movie @node {
 
 === Deprecated `where` field in `update` input
 
-The `where` field for nested update operations has been deprecated to be moved within the `update` input field.
+The `where` field for nested update operations has been deprecated to be moved inside the `update` input field.
 The `where` in its deprecated location is a no-op for all nested operations apart from `update`.
 
 For example, the following mutation is using the deprecated syntax:
@@ -788,7 +788,7 @@ mutation {
 }
 ```
 
-It should be modified to move the `where` inside the `update` operation:
+Modify the mutation to move the `where` inside the `update` operation:
 
 ```graphql
 mutation {
