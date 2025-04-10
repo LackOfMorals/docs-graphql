@@ -137,30 +137,4 @@ aura-cli data-api graphql delete YOUR_GRAPHQL_DATA_API_ID  --instance-id YOUR_AU
 
 == Provide feedback 
 
-We encourage feedback because it directly impacts the final product. Here's why it matters:
-
-[square]
-* Shape the Product
-+ 
-Your feedback helps us refine features, fix bugs, and improve usability based on real user experiences.
-
-
-* Get a Product That Works for You
-+ 
-By sharing your thoughts, you influence the design and functionality to better meet your needs.
-
-
-* Catch Issues Early
-+ 
-Beta testing allows early identification and resolution of problems before the full release, ensuring a smoother experience.
-
-
-* Improve Performance and Reliability
-+ 
-We rely on real-world usage data to optimize speed, stability, and efficiency.
-
-
-By providing feedback, you're not just testing a product—you’re helping build a better one.
-
-Please take a few moments to do this in our GitHub repository by (https://github.com/neo4j/graphql/issues/new/choose)[creating an issue] or mailto:jon.giffard@neo4j.com[send an email]
-
+Please consider taking a few moments to provide feedback either by creating an issue in our (https://github.com/neo4j/graphql/issues/new/choose)[GitHub repository] or using our #graphql channel on our [Discord Community](https://discord.gg/M8mTADEJ) or our [forums](https://community.neo4j.com/c/drivers-stacks/graphql/33).
