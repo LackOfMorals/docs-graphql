@@ -1,6 +1,7 @@
-= Configuring the Aura CLI for the GraphQL API
+= Configuring the Aura CLI
 
-GraphQL for Neo4j AuraDB is managed using the Aura Console or the beta commands of Aura CLI command line tool.  For the latter there are installation and configuration steps to be taken before it can be used. 
+GraphQL for Neo4j AuraDB is managed using the Aura Console or the beta commands of the Aura CLI.
+For the latter there are installation and configuration steps to be taken before you can use it.
 
 
 == Obtain Aura API credentials
@@ -10,23 +11,22 @@ To use the API, a set of credentials is required.
 To get the credentials, follow these steps depending on which version of the console you are using.
 
 . Log in to the link:https://console.neo4j.io/[Neo4j Aura Console].
-. Navigate to the top right where your account name is displayed and select it.  A dropdown menu will apear.
+. Navigate to the top right and select your account name, then **API keys** from the dropdown menu.
 +
 image::aura-graphql/using-the-auracli/unified-console-account-dropdown.png[]
 +
-. From the menu, select *API keys*.  This will show any existing API keys that you may already have. 
+. The menu shows existing API keys if you already have any. 
 +
 image::aura-graphql/using-the-auracli/unified-console-api-keys.png[]
 +
-. Click *Create* to create a new API key. 
+. Use **Create**, then enter a a name for the API key and confirm with **Create**. 
 +
 image::aura-graphql/using-the-auracli/unified-console-api-keys-create.png[]
 +
-. In the pop-up window, enter a name for the API Key and then click *Create*.
+. The client ID and client secret are displayed.
+  Be sure to record or save these as the client secret will not be shown again.
 +
 image::aura-graphql/using-the-auracli/unified-console-api-keys-created.png[]
-+
-. The client ID and client secret are displayed. Be sure to record or save these as the client secret will not be shown again.
 
 
 == Install the Aura CLI
@@ -81,17 +81,16 @@ The aura-cli has been through the Apple certification process but it can take ti
 
 == Configure the Aura CLI
 
-Configure the Aura CLI with the Aura API client ID and client secret you obtained earlier.
+Configure the Aura CLI with the Aura API client ID and client secret you obtained in xref:#_obtain_aura_api_credentials[].
 
-
-. At the command prompt, enter the following, using your values for the items in CAPITALS:
+. On the command line, execute the following:
 +
 [source, bash, indent=0]
 ----
-aura-cli credential add --name YOUR_LABEL --client-id YOUR_CLIENT_ID --client-secret YOUR_CLIENT_SECRET
+aura-cli credential add --name <YOUR_LABEL> --client-id <YOUR_CLIENT_ID> --client-secret <YOUR_CLIENT_SECRET>
 ----
 +
-. To confirm the credentials are working, list your Aura instances:
+. To verify that the credentials are working, list your Aura instances:
 +
 [source, bash, indent=0]
 ----
@@ -101,16 +100,16 @@ aura-cli instance list --output table
 
 === Enable the beta commands
 
-Set the configuration option to make available the beta commands to use GraphQL for Neo4j AuraDB with the Aura CLI
+Set the configuration option to make available the beta commands to use GraphQL for Neo4j AuraDB with the Aura CLI.
 
-. At the command prompt, enter the following:
+. On the command line, execute the following:
 +
 [source, bash, indent=0]
 ----
 aura-cli config set beta-enabled true
 ----
 +
-. Check if the commands are listed for the open beta:
+. Check if the commands are listed:
 +
 [source, bash, indent=0]
 ----

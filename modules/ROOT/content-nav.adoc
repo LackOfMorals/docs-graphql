@@ -57,12 +57,11 @@
 * *Products*
 
 * xref:aura-graphql/index.adoc[]
-** xref:aura-graphql/create-a-new-graphql-api.adoc[]
-** xref:aura-graphql/view-a-graphql-api.adoc[]
-** xref:aura-graphql/update-a-graphql-api.adoc[]
-** xref:aura-graphql/delete-a-graphql-api.adoc[]
-** xref:aura-graphql/using-your-api.adoc[]
-** xref:aura-graphql/auracli-prerequisites.adoc[]
+** xref:aura-graphql/api-creation.adoc[]
+** xref:aura-graphql/api-update.adoc[]
+** xref:aura-graphql/api-deletion.adoc[]
+** xref:aura-graphql/api-usage.adoc[]
+** xref:aura-graphql/aura-cli-configuration.adoc[]
 
 * xref:introspector.adoc[Introspector]
 
