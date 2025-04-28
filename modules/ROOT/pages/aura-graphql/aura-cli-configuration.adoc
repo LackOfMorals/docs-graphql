@@ -73,8 +73,8 @@ aura version v1.1.0
 [NOTE]
 ====
 If you are using a Mac, you may receive a warning from Apple that aura-cli could not be verified.
-If this happens, open *System Settings*, click *Privacy & Security* on the left, and scroll down on the right.
-Click *Open Anyway*.
+If this happens, navigate to **System Settings**, then **Privacy & Security** on the left, and scroll down on the right.
+Select **Open Anyway**.
 This should not happen again.
 The aura-cli has been through the Apple certification process but it can take time to trickle down through the Apple ecosystem.
 ====
