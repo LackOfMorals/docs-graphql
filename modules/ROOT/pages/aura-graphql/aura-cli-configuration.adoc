@@ -13,20 +13,20 @@ To get the credentials, follow these steps depending on which version of the con
 . Log in to the link:https://console.neo4j.io/[Neo4j Aura Console].
 . Navigate to the top right and select your account name, then **API keys** from the dropdown menu.
 +
-image::aura-graphql/using-the-auracli/unified-console-account-dropdown.png[]
+image::aura-graphql/aura-cli/account-dropdown.png[]
 +
 . The menu shows existing API keys if you already have any. 
 +
-image::aura-graphql/using-the-auracli/unified-console-api-keys.png[]
+image::aura-graphql/aura-cli/api-keys.png[]
 +
 . Use **Create**, then enter a a name for the API key and confirm with **Create**. 
 +
-image::aura-graphql/using-the-auracli/unified-console-api-keys-create.png[]
+image::aura-graphql/aura-cli/api-keys-create.png[]
 +
 . The client ID and client secret are displayed.
   Be sure to record or save these as the client secret will not be shown again.
 +
-image::aura-graphql/using-the-auracli/unified-console-api-keys-created.png[]
+image::aura-graphql/aura-cli/api-keys-created.png[]
 
 
 == Install the Aura CLI
