@@ -81,7 +81,7 @@ An authentication provider can be removed by selecting the trash icon.
 +
 image::aura-graphql/create/auth-providers.png[]
 +
-[NOTE]
+[CAUTION]
 ====
 It is not recommended to use API keys with user-facing applications that are using the GraphQL API.
 This is due to the risk of the API key being visible to malicious users and very little control over GraphQL operations.
