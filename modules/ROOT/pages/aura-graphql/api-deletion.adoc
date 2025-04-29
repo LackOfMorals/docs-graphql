@@ -32,7 +32,7 @@ Display a list of AuraDBs in a table:
 +
 [source, bash, indent=0]
 ----
-aura-cli instance list --output table
+aura-cli instance list
 ----
 From the table, find the AuraDB that has the GraphQL API that you wish to change.
 Make a note of its ID.
@@ -43,7 +43,7 @@ Using the AuraDB ID, list any GraphQL API that it may have:
 +
 [source, bash, indent=0]
 ----
-aura-cli data-api graphql list --instance-id YOUR_AURA_INSTANCE_ID --output table
+aura-cli data-api graphql list --instance-id YOUR_AURA_INSTANCE_ID
 ----
 + 
 From that table, locate the GraphQL API you want to modify and make a note of its ID.
@@ -55,5 +55,5 @@ Using both the AuraDB instance ID and the ID of the associated GraphQL API, you 
 
 [source, bash, indent=0]
 ----
-aura-cli data-api graphql delete YOUR_GRAPHQL_DATA_API_ID  --instance-id YOUR_AURA_INSTANCE_ID --output table
+aura-cli data-api graphql delete YOUR_GRAPHQL_DATA_API_ID  --instance-id YOUR_AURA_INSTANCE_ID
 ----

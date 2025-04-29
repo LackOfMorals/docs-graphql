@@ -94,7 +94,7 @@ aura-cli credential add --name <YOUR_LABEL> --client-id <YOUR_CLIENT_ID> --clien
 +
 [source, bash, indent=0]
 ----
-aura-cli instance list --output table
+aura-cli instance list
 ----
 
 

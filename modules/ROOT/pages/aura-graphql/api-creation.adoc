@@ -45,8 +45,8 @@ image::aura-graphql/create/type-definitions.png[]
 . Cross-Origin Resource Sharing (CORS) policy
 +
 If a browser based application will be using this GraphQL API, add an entry in your Cross-Origin Resource Sharing (CORS) policy.
-CORS is a browser-based security mechanism that prevents web pages from accessing resources from a server on a different domain.
-Allow the domain that serves the browser application by adding it to the CORS policy.
+CORS is a browser-based security mechanism that prevents web pages from accessing resources from a server with a different origin.
+Allow the URL that serves the browser application by adding it to the CORS policy.
 This includes development environments such as node.js, which serves content on your localhost or similar.
 This also holds for using web-based tooling for GraphQL APIs such as https://studio.apollographql.com/[Apollo Studio].
 +
@@ -55,12 +55,12 @@ For example, if you are trying out GraphQL operations using cURL.
 +
 [NOTE]
 ====
-The domain entered in the CORS policy must be an exact match.
+The URL entered in the CORS policy must be an exact match.
 For example, http://localhost is not the same as http://localhost:3000/.
 Wildcards are not supported. 
 ====
 +
-To add a CORS policy entry, enter the exact domain, including HTTP/S and any port number, in the **Origin box**.
+To add a CORS policy entry, enter the exact URL, including HTTP/S and any port number, in the **Origin box**.
 If you need multiple entries, select **Add allowed origin**.
 +
 image::aura-graphql/create/cors-policy.png[]
@@ -83,14 +83,14 @@ image::aura-graphql/create/auth-providers.png[]
 +
 [NOTE]
 ====
-It is not recommended to use API keys with browser-based applications that are using the GraphQL API.
-This is due to the API key being visible when using browser developer tooling and very little control over GraphQL operations.
-A 3rd party identity provider with JWKS provides better security and allows for granular security rules, based on information within the JWKS token, to be defined within the Type Definitions to control GraphQL operations.
+It is not recommended to use API keys with user-facing applications that are using the GraphQL API.
+This is due to the risk of the API key being visible to malicious users and very little control over GraphQL operations.
+A 3rd party identity provider with JWKS provides better security and allows for granular security rules, based on information within the JWKS token, to be defined within the type definitions to control GraphQL operations.
 ====
 +
 . Sizing
 +
-Sizing a GraphQL API is based on the complexity of the type definitios, roughly their size, and the workload that is serviced.
+Sizing a GraphQL API is based on the size and complexity of the type definitions and the workload that is serviced.
 Larger sizes have a higher hourly cost.
 If the cost is not displayed, refer to the agreement you have with Neo4j. 
 +
@@ -119,8 +119,8 @@ If it has a status of 'Error', use the three dots icon and **Edit** from the men
 == Aura CLI
 
 Like the Console, the Aura CLI can also be used to create a GraphQL API.
-There is a difference: only an API Key is used for the authentication provider.
-This can be changed in the Console after the GraphQL API has been provisioned.
+There is a difference: on creation, only an API Key authentication provider is created.
+The authentication providers can be modified using subsequent CLI commands.
 
 To create a GraphQL API with the Aura CLI, proceed as follows.
 
@@ -130,7 +130,7 @@ From the table, locate the ID of the Aura instance that the GraphQL API will be 
 +
 [source, bash, indent=0]
 ----
-aura-cli instance list --output table
+aura-cli instance list
 ----
 +
 . Save type definitions
@@ -151,11 +151,12 @@ Make sure you note the API Key and ID.
 +
 . Check progress
 + 
-To see if the GraphQL API is ready to use
+To see if the GraphQL API is ready to use, run the following command:
 +
 [source, bash, indent=0]
 ----
 aura-cli data-api graphql get YOUR_GRAPHQL_API_ID --instance-id YOUR_AURA_INSTANCE_ID
 ----
 
+If the status is "Ready", the API is ready to use.
 
