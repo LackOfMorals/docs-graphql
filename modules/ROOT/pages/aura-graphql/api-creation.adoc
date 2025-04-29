@@ -21,12 +21,12 @@ image::aura-graphql/create/details.png[]
 +
 [CAUTION]
 ====
-**Enable introspection** and **Enable field suggestions** are intended for development or testing environments.
-Do not enable them for production systems as the information they provide can be used by unknown actors from reverse-engineering your GraphQL schema and executing arbitrary operations.
+If you set **Enable introspection** and **Enable field suggestions** for production systems the information they provide can be used by malicious actors to reverse-engineer your GraphQL schema and execute arbitrary operations.
 
 **Enable introspection** allows you to query the schema and discover the available queries, mutations, subscriptions, types and fields in the GraphQL API.  
 
-**Enable field suggestions** provides suggestions that hint towards GraphQL typos. 
+**Enable field suggestions** provides suggestions that hint towards GraphQL typos.
+Even with just field suggestions enabled, it is possible for a malicious actor to discover your entire schema.
 ====
 +
 . Type definitions
