@@ -55,5 +55,5 @@ Using both the AuraDB instance ID and the ID of the associated GraphQL API, you 
 
 [source, bash, indent=0]
 ----
-aura-cli data-api graphql delete YOUR_GRAPHQL_DATA_API_ID  --instance-id YOUR_AURA_INSTANCE_ID
+aura-cli data-api graphql delete YOUR_GRAPHQL_DATA_API_ID --instance-id YOUR_AURA_INSTANCE_ID
 ----

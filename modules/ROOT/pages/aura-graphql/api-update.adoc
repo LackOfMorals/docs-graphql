@@ -72,7 +72,7 @@ Using the IDs of both AuraDB and the GraphQL API, this is achieved with:
 
 [source, bash, indent=0]
 ----
-aura-cli data-api graphql get YOUR_GRAPHQL_API_ID   --instance-id YOUR_AURA_INSTANCE_ID 
+aura-cli data-api graphql get YOUR_GRAPHQL_API_ID --instance-id YOUR_AURA_INSTANCE_ID 
 ----
 
 
@@ -121,14 +121,14 @@ We recommend you to use JWKS authentication providers in user-facing client appl
 +
 [source, bash, indent=0]
 ----
-aura-cli data-api graphql auth-provider list --data-api-id YOUR_GRAPHQL_API_ID  --instance-id YOUR_AURA_INSTANCE_ID 
+aura-cli data-api graphql auth-provider list --data-api-id YOUR_GRAPHQL_API_ID --instance-id YOUR_AURA_INSTANCE_ID 
 ----
 +
 - Get the details of a specific authentication provider:
 +
 [source, bash, indent=0]
 ----
-aura-cli data-api graphql auth-provider get YOUR_AUTH_PROVIDER_ID --data-api-id YOUR_GRAPHQL_API_ID  --instance-id YOUR_AURA_INSTANCE_ID 
+aura-cli data-api graphql auth-provider get YOUR_AUTH_PROVIDER_ID --data-api-id YOUR_GRAPHQL_API_ID --instance-id YOUR_AURA_INSTANCE_ID 
 ----
 +
 - Add a new API key. 
@@ -138,7 +138,7 @@ aura-cli data-api graphql auth-provider get YOUR_AUTH_PROVIDER_ID --data-api-id 
 +
 [source, bash, indent=0]
 ----
-aura-cli data-api graphql auth-provider create  --name YOUR_FRIENDLY_NAME --type api-key --data-api-id YOUR_GRAPHQL_API_ID --instance-id YOUR_AURA_INSTANCE_ID
+aura-cli data-api graphql auth-provider create --name YOUR_FRIENDLY_NAME --type api-key --data-api-id YOUR_GRAPHQL_API_ID --instance-id YOUR_AURA_INSTANCE_ID
 ----
 +
 - Add a new JWKS.
@@ -157,7 +157,7 @@ aura-cli data-api graphql auth-provider create --name YOUR_FRIENDLY_NAME --url Y
 +
 [source, bash, indent=0]
 ----
-aura-cli data-api graphql auth-provider delete  --name YOUR_FRIENDLY_NAME --type api-key --data-api-id YOUR_GRAPHQL_API_ID --instance-id YOUR_AURA_INSTANCE_ID
+aura-cli data-api graphql auth-provider delete --name YOUR_FRIENDLY_NAME --type api-key --data-api-id YOUR_GRAPHQL_API_ID --instance-id YOUR_AURA_INSTANCE_ID
 ----
 
 
@@ -169,7 +169,7 @@ You can add or remove allowed origins for the CORS policy of the GraphQL API.
 +
 [source, bash, indent=0]
 ----
-aura-cli data-api graphql get YOUR_GRAPHQL_API_ID  --instance-id YOUR_AURA_INSTANCE_ID 
+aura-cli data-api graphql get YOUR_GRAPHQL_API_ID --instance-id YOUR_AURA_INSTANCE_ID 
 ----
 +
 - Add a new origin:
