@@ -15,11 +15,11 @@ To get the credentials, follow these steps depending on which version of the con
 +
 image::aura-graphql/aura-cli/account-dropdown.png[]
 +
-. The menu shows existing API keys if you already have any. 
+. The menu shows existing API keys if you already have any.
 +
 image::aura-graphql/aura-cli/api-keys.png[]
 +
-. Use **Create**, then enter a a name for the API key and confirm with **Create**. 
+. Use **Create**, then enter a a name for the API key and confirm with **Create**.
 +
 image::aura-graphql/aura-cli/api-keys-create.png[]
 +
