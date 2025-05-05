@@ -89,7 +89,7 @@ You can change multiple settings at once:
 
 [source, bash, indent=0]
 ----
-aura-cli data-api graphql update YOUR_GRAPHQL_API_ID --instance-id <YOUR_AURA_INSTANCE_ID> <YOUR_MODIFICATION_FLAGS>
+aura-cli data-api graphql update <YOUR_GRAPHQL_API_ID> --instance-id <YOUR_AURA_INSTANCE_ID> <YOUR_MODIFICATION_FLAGS>
 ----
 
 where `<YOUR_MODIFICATION_FLAGS>` is one or more from:
