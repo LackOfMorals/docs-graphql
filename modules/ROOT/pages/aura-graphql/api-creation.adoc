@@ -36,7 +36,7 @@ The type definitions are the same as those used with Neo4j GraphQL Library with 
 +
 If you already have data in the AuraDB, a quick way to obtain type definitions is to use the https://graphql-toolbox.neo4j.io[Neo4j GraphQL Toolbox]. This facility has the ability to connect to an AuraDB, automatically create type definitions and allow GraphQL operations.
 +
-Alternatively you can write your own type definitions from first principles by following the guidance provided in xref:index.adoc[Neo4j GraphQL Library] documention
+Alternatively you can write your own type definitions from first principles by following the guidance provided in xref:index.adoc[Neo4j GraphQL Library] documentation.
 +
 If you are using GraphQL Federation then make sure to select **Enable GraphQL subgraph**.
 +
