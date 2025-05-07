@@ -111,17 +111,6 @@ Defining `labels` means you take control of the database labels of the node.
 Indexes and constraints in Neo4j only support a single label, for which the first element of the `labels` argument is used.
 ====
 
-The following example results in a unique constraint to be asserted for the label `K9` and the property `name`:
-
-[source, graphql, indent=0]
-----
-type Dog @node(labels: ["K9", "Dog"]) {
-    name: String! @unique
-}
-----
-
-See xref::/directives/indexes-and-constraints.adoc#_unique[`@unique`] to learn more about the `@unique` directive.
-
 
 ==== Using `$jwt` and `$context`
 
