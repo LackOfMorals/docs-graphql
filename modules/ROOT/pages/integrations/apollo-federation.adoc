@@ -207,7 +207,7 @@ const typeDefs = `#graphql
 `;
 ----
 
-Although only the `@key` directive has been added to this example, consider using either the `@id` or the `@unique` directives on the `id` field.
+Although only the `@key` directive has been added to this example, consider using the `@id` directive on the `id` field.
 The Federation gateway expects each key to resolve to one result, so it is good practice to ensure that these values are unique in the database.
 
 == Generate a subgraph schema
