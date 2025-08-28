@@ -128,12 +128,24 @@ const server = new ApolloServer({
     schema: await neoSchema.getSchema(),
 });
 
+
 const { url } = await startStandaloneServer(server, {
+    context: async ({ req }) => ({
+        req,
+        cypherQueryOptions: {
+            addVersionPrefix: true,
+        },
+    }),
     listen: { port: 4000 },
 });
 
 console.log(`🚀 Server ready at ${url}`);
 ----
+
+[NOTE]
+====
+If you are using Neo4j 4.x, set the value of `addVersionPrefix` to false. Note that this may cause issues with AuraDB or Neo4j 2025 instances.
+====
 
 == Start the server
 
@@ -171,7 +183,12 @@ const server = new ApolloServer({
 });
 
 const { url } = await startStandaloneServer(server, {
-    context: async ({ req }) => ({ req }),
+    context: async ({ req }) => ({
+        req,
+        cypherQueryOptions: {
+            addVersionPrefix: true,
+        },
+    }),
     listen: { port: 4000 },
 });
 
